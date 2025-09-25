@@ -12,8 +12,8 @@ export const authProvider: AuthProvider = {
     //   (u) => u.username === username && u.password === password,
     // );
     let user = null;
-    if (username === "a01029708" && password === "tc2007b") {
-       user = { id: 1, username: "a01029708", name: "Administrator", password: "tc2007b" };
+    if (username === "1" && password === "1") {
+       user = { id: 1, username: "1", name: "Administrator", password: "tc2007b" };
     } else {
        user = null;
     }
