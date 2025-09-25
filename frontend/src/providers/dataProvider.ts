@@ -1,37 +1,66 @@
-// src/dataProvider.ts
 import fakeDataProvider from "ra-data-fakerest";
 
 const data = {
   "mis-reportes": [
     {
-      id: 1,
-      title: "Mi reporte 1",
-      description: "Fuga de agua",
-      user_id: 1,
-      turn: 1,
-    },
-    {
-      id: 2,
-      title: "Mi reporte 2",
-      description: "Incendio leve",
-      user_id: 2,
-      turn: 2,
+      folio: 1,
+      tiempo_fecha: "00-00-00THH:MM:DD",
+      turno: 0,
+      usuario_reportando: "",
+      modo_de_activacion: "",
+      tipo_servicio: [],
+      tiempo_fecha_atencion: "00-00-00THH:MM:DD",
+      tiempo_translado: 0,
+      gravedad_emergencia: 0, // [0, 1, 2]
+      kilometros_recorridos: 0,
+      trabaja_realizado: "",
+      observaciones: {},
+      dictamen: "",
+      nombres_afectados: [],
+      dependencias_participantes: [],
+      ubi: "",
+      otros: {},
     },
   ],
   reportes: [
-    { id: 1, turn: "Mañana", detail: "Choque en avenida", user_id: 1 },
-    { id: 2, turn: "Noche", detail: "Accidente doméstico", user_id: 3 },
-    { id: 3, turn: "Tarde", detail: "Rescate animal", user_id: 2 },
+    {
+      folio: 1,
+      tiempo_fecha: "00-00-00THH:MM:DD",
+      turno: 0,
+      usuario_reportando: "",
+      modo_de_activacion: "",
+      tipo_servicio: [],
+      tiempo_fecha_atencion: "00-00-00THH:MM:DD",
+      tiempo_translado: 0,
+      gravedad_emergencia: 0, // [0, 1, 2]
+      kilometros_recorridos: 0,
+      trabaja_realizado: "",
+      observaciones: {},
+      dictamen: "",
+      nombres_afectados: [],
+      dependencias_participantes: [],
+      ubi: "",
+      otros: {},
+    },
   ],
   usuarios: [
-    { id: 1, name: "Alice", role: "Paramédico" },
-    { id: 2, name: "Bob", role: "Jefe de Turno" },
-    { id: 3, name: "Carlos", role: "Administrador" },
+    {
+      nombre: "Alice",
+      apellido: "Alice",
+      fecha_nacimiento: "00-00-00",
+      fecha_registro: "00-00-00",
+      agregado_por: 0,
+      eliminado_por: null,
+      role: "paramédico",
+    },
   ],
   turnos: [
-    { id: 1, schedule: "Mañana 7:00 - 15:00" },
-    { id: 2, schedule: "Tarde 15:00 - 23:00" },
-    { id: 3, schedule: "Noche 23:00 - 7:00" },
+    { schedule: "Lun,vie	8-3" },
+    { schedule: "Lun,vie	3-9pm" },
+    { schedule: "Lun,mie,vie	9pm-8am" },
+    { schedule: "Mar,jue,dom	9pm-8am" },
+    { schedule: "Sab,dom,fest	8am-8pm" },
+    { schedule: "Sab,dom,fest	8pm-8am" },
   ],
 };
 
