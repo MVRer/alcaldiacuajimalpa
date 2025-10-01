@@ -20,8 +20,8 @@ export const App = () => (
   >
     <Resource
       name="mis-reportes"
-      recordRepresentation="Mis reports"
-      options={{ label: "Mis Reporter" }}
+      recordRepresentation="Mis reportes"
+      options={{ label: "Mis Reportes" }}
       icon={AbcIcon}
       list={ListGuesser}
       // edit={}
@@ -31,7 +31,7 @@ export const App = () => (
     <Resource
       name="reportes"
       recordRepresentation={(report) => `${report.turn}`}
-      options={{ label: "Reporter" }}
+      options={{ label: "Reportes" }}
       icon={AbcIcon}
       list={ListGuesser}
       // edit={}

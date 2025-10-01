@@ -1,47 +1,66 @@
 import { AuthProvider, HttpError } from "react-admin";
-// import data from "./users.json";
 
-/**
- * This authProvider is only for test purposes. Don't use it in production.
- */
 export const authProvider: AuthProvider = {
-  
-  login: ({ username, password }) => {
+
+  login: async ({ username, password }) => {
+  try {
+    const response = await fetch('http://localhost:3000/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    if (!response.ok) {
+      throw new Error('Invalid credentials');
+    }
+
+    const data = await response.json();
     
-    // const user = data.users.find(
-    //   (u) => u.username === username && u.password === password,
-    // );
-    let user = null;
-    if (username === "1" && password === "1") {
-       user = { id: 1, username: "1", name: "Administrator", password: "tc2007b" };
-    } else {
-       user = null;
-    }
-
-    if (user) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...userToPersist } = user;
-      localStorage.setItem("user", JSON.stringify(userToPersist));
-      //localStorage.setItem("auth", "Bearer " + user.token);
-      return Promise.resolve();
-    }
-
+    const user = {
+      id: data.user._id,
+      fullname: data.user.nombre + " " + data.user.apellidos,
+      username: data.user.correo_electronico,
+    };
+    
+    console.log('User data:', user);
+    
+    const auth = data.token;
+    const permissions = data.user.permissions;
+    
+    // Guardar en localStorage
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("auth", "Bearer " + auth);
+    localStorage.setItem("permissions", JSON.stringify(permissions));
+    
+    return Promise.resolve();
+    
+  } catch (error) {
+    console.error('Error:', error);
     return Promise.reject(
       new HttpError("Unauthorized", 401, {
         message: "Invalid username or password",
-      }),
+      })
     );
-  },
+  }
+},
   logout: () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("auth");
+    localStorage.removeItem("permissions");
     return Promise.resolve();
   },
   checkError: () => Promise.resolve(),
   checkAuth: () =>
     localStorage.getItem("user") ? Promise.resolve() : Promise.reject(),
+
+
+
   getPermissions: () => {
     return Promise.resolve(undefined);
   },
+  
   getIdentity: () => {
     const persistedUser = localStorage.getItem("user");
     const user = persistedUser ? JSON.parse(persistedUser) : null;
