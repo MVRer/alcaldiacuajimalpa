@@ -5,23 +5,23 @@ import { AuthProvider, HttpError } from "react-admin";
  * This authProvider is only for test purposes. Don't use it in production.
  */
 export const authProvider: AuthProvider = {
-  
   login: ({ username, password }) => {
-    
-    // const user = data.users.find(
-    //   (u) => u.username === username && u.password === password,
-    // );
     let user = null;
+
+    // Mocked login
     if (username === "1" && password === "1") {
-       user = { id: 1, username: "1", name: "Administrator", password: "tc2007b" };
-    } else {
-       user = null;
+      user = {
+        id: 1,
+        userName: "1",
+        name: "Jose",
+        fullName: "Joseeeee",
+        turn: 3,
+        role: "admin", // TODO: add authorization schema
+      };
     }
 
     if (user) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...userToPersist } = user;
-      localStorage.setItem("user", JSON.stringify(userToPersist));
+      localStorage.setItem("user", JSON.stringify(user));
       return Promise.resolve();
     }
 
@@ -31,21 +31,36 @@ export const authProvider: AuthProvider = {
       }),
     );
   },
+
   logout: () => {
     localStorage.removeItem("user");
     return Promise.resolve();
   },
+
   checkError: () => Promise.resolve(),
+
   checkAuth: () =>
     localStorage.getItem("user") ? Promise.resolve() : Promise.reject(),
-  getPermissions: () => {
-    return Promise.resolve(undefined);
-  },
+
+  getPermissions: () => Promise.resolve(),
+
   getIdentity: () => {
     const persistedUser = localStorage.getItem("user");
     const user = persistedUser ? JSON.parse(persistedUser) : null;
 
-    return Promise.resolve(user);
+    if (!user) {
+      return Promise.reject();
+    }
+
+    return Promise.resolve({
+      id: user.id,
+      userName: user.userName,
+      name: user.name,
+      fullName: user.fullName,
+      avatar: undefined, // TODO: optional, can be a URL look up later
+      turn: user.turn,
+      role: user.role,
+    });
   },
 };
 

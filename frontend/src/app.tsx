@@ -7,7 +7,7 @@ import { Dashboard } from "./dashboard";
 
 import AbcIcon from "@mui/icons-material/Abc";
 
-import { CreateMyReport } from "./resources/myReport";
+import { CreateMyReport, MyReportList } from "./resources/myReport";
 
 export const App = () => (
   <Admin
@@ -21,7 +21,7 @@ export const App = () => (
       recordRepresentation="Mis reports"
       options={{ label: "Mis Reporter" }}
       icon={AbcIcon}
-      list={ListGuesser}
+      list={MyReportList}
       // edit={}
       create={CreateMyReport}
       // show={}
