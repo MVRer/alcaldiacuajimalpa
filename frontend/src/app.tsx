@@ -7,7 +7,10 @@ import { Dashboard } from "./dashboard";
 
 import AbcIcon from "@mui/icons-material/Abc";
 
+
 import { CreateMyReport, MyReportList } from "./resources/myReport";
+import { UserCreate, UserEdit, UserList, UserShow } from "./resources/user";
+import { SubordinadoShow, SubordinadosList } from "./resources/subordinados";
 
 export const App = () => (
   <Admin
@@ -18,8 +21,8 @@ export const App = () => (
   >
     <Resource
       name="mis-reportes"
-      recordRepresentation="Mis reports"
-      options={{ label: "Mis Reporter" }}
+      recordRepresentation="Mis reportes"
+      options={{ label: "Mis Reportes" }}
       icon={AbcIcon}
       list={MyReportList}
       // edit={}
@@ -29,7 +32,7 @@ export const App = () => (
     <Resource
       name="reportes"
       recordRepresentation={(report) => `${report.turn}`}
-      options={{ label: "Reporter" }}
+      options={{ label: "Reportes" }}
       icon={AbcIcon}
       list={ListGuesser}
       // edit={}
@@ -41,10 +44,10 @@ export const App = () => (
       recordRepresentation="Usuarios"
       options={{ label: "Usuarios" }}
       icon={AbcIcon}
-      list={ListGuesser}
-      // edit={}
-      // create={}
-      // show={}
+      list={UserList}
+      edit={UserEdit}
+      create={UserCreate}
+      show={UserShow}
     />
     <Resource
       name="turnos"
@@ -55,6 +58,16 @@ export const App = () => (
       // edit={}
       // create={}
       // show={}
+    />
+    <Resource
+      name="usuariossubordinados"
+      recordRepresentation={(subordinado) => `${subordinado.nombre} ${subordinado.apellidos}`}
+      options={{ label: "Subordinados" }}
+      icon={AbcIcon}
+      list={SubordinadosList}
+      // edit={}
+      // create={}
+      show={SubordinadoShow}
     />
   </Admin>
 );

@@ -48,12 +48,28 @@ const data = {
   usuarios: [
     {
       nombre: "Alice",
-      apellido: "Alice",
+      apellidos: "Mamota",
       fecha_nacimiento: "00-00-00",
       fecha_registro: "00-00-00",
+      telefono: "5555555555",
+      correo_electronico: "alice@example.com",
+      curp: "AAAA000000AAAAAA00",
+      direccion: "Calle Falsa 123, Ciudad, Pais",
       agregado_por: 0,
       eliminado_por: null,
-      role: "paramédico",
+      rol: "paramédico",
+    },
+  ],
+  usuariossubordinados: [
+    {
+      nombre: "Alice",
+      apellidos: "Mamota",
+      fecha_nacimiento: "00-00-00",
+      fecha_registro: "00-00-00",
+      telefono: "5555555555",
+      correo_electronico: "alice@example.com",
+      turno: "LV-8am3pm",
+      agregado_por: 0,
     },
   ],
   turnos: [
