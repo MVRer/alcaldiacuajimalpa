@@ -1,42 +1,297 @@
-import { Create, TextInput, TabbedForm, FormTab } from "react-admin";
+import * as React from "react";
+import {
+  Create,
+  SimpleForm,
+  NumberInput,
+  DateTimeInput,
+  TextInput,
+  ArrayInput,
+  SimpleFormIterator,
+  SelectInput,
+  useGetIdentity,
+  FormDataConsumer,
+} from "react-admin";
+import { Box, Typography, Divider } from "@mui/material";
 
-export const CreateMyReport = () => (
-  <Create>
-    <TabbedForm>
-      <FormTab label="Main">
-        <TextInput source="name" label="Nombre" />
-        <TextInput source="name" label="Descripcion" multiline={true} />
-      </FormTab>
+import {
+  List,
+  Datagrid,
+  TextField,
+  DateField,
+  NumberField,
+  ArrayField,
+  SingleFieldList,
+  ChipField,
+} from "react-admin";
+import { TopToolbar, ExportButton, CreateButton } from "react-admin";
 
-      <FormTab label="Descripcion">
-        <TextInput source="name" label="Nombre" />
-      </FormTab>
-    </TabbedForm>
-  </Create>
+const gravedadChoices = [
+  { id: 0, name: "Baja" },
+  { id: 1, name: "Media" },
+  { id: 2, name: "Alta" },
+];
+
+const reportWayChoices = [
+  { id: "C5", name: "C5" },
+  { id: "C3", name: "C3" },
+  { id: "Policia", name: "Policia" },
+  { id: "Directo", name: "Directo" },
+  { id: "otro", name: "Otro" },
+];
+
+const tipoServicioChoices = [
+  { id: "incendio", name: "Incendio" },
+  { id: "accidente", name: "Accidente" },
+  { id: "rescate", name: "Rescate" },
+  { id: "otro", name: "Otro (Especificar)" },
+];
+
+const translateTurn = (turn) => {
+  const turns = [
+    { schedule: "Lun,vie	8-3" },
+    { schedule: "Lun,vie	3-9pm" },
+    { schedule: "Lun,mie,vie	9pm-8am" },
+    { schedule: "Mar,jue,dom	9pm-8am" },
+    { schedule: "Sab,dom,fest	8am-8pm" },
+    { schedule: "Sab,dom,fest	8pm-8am" },
+  ];
+
+  const validTurn =
+    turn !== null &&
+    turn !== undefined &&
+    turn &&
+    turn > 0 &&
+    turn < turns.length &&
+    typeof turn === "number";
+
+  return validTurn ? turns[turn].schedule : "N/D";
+};
+
+export const CreateMyReport = () => {
+  const { data: identity, isLoading } = useGetIdentity();
+
+  if (isLoading) return <p>Cargando...</p>; // TODO: replace with spinner
+  if (!identity) return <h2>No Logged in</h2>;
+
+  const now = new Date().toISOString();
+  const codigoPostal = "01389";
+  const address = "Avenida Carlos Lazo 100, Col. Santa Fe, Ciudad de Mexico";
+
+  return (
+    <Create>
+      <Box
+        sx={{
+          mb: 2,
+          p: 2,
+          bgcolor: "background.paper",
+          borderRadius: 2,
+          boxShadow: 1,
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Sesión Actual
+        </Typography>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+          <Typography variant="body1">
+            <strong>Usuario:</strong> {identity.fullName}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Turno:</strong> {translateTurn(identity.turn)}
+          </Typography>
+        </Box>
+      </Box>
+
+      <SimpleForm
+        defaultValues={{
+          y: now,
+          tiempo_fecha_atencion: now,
+          ubi: address,
+          codigoPostal: codigoPostal,
+          // gravedad_emergencia: gravedadChoices[1].name,
+          // modo_de_activacion: "",
+          // kilometros_recorridos: "",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Identificación y Ubicación
+        </Typography>
+        <Box sx={{ display: { xs: "block", md: "flex" }, gap: 2 }}>
+          <NumberInput source="folio" label="Folio" />
+          <DateTimeInput
+            source="tiempo_fecha"
+            label="Fecha y Hora del Reporte"
+          />
+          <TextInput source="codigoPostal" label="Codigo Postal" />
+        </Box>
+
+        <TextInput source="ubi" label="Ubicación" fullWidth />
+
+        <Divider sx={{ my: 2 }} />
+
+        <Typography variant="h6" gutterBottom>
+          Detalles del Servicio
+        </Typography>
+        <Box sx={{ display: { xs: "block", md: "flex" }, gap: 2 }}>
+          <SelectInput
+            source="modo_de_activacion"
+            label="Forma de reporte"
+            choices={reportWayChoices}
+          />
+          <SelectInput
+            source="gravedad_emergencia"
+            label="Gravedad"
+            choices={gravedadChoices}
+          />
+          <DateTimeInput
+            source="tiempo_fecha_atencion"
+            label="Hora de Atención"
+          />
+        </Box>
+
+        <ArrayInput
+          source="tipo_servicio"
+          label="Tipo de Servicio"
+          format={(value) =>
+            value ? value.map((item) => ({ tipo: item, otro: "" })) : []
+          }
+          parse={(value) =>
+            value
+              ? value.map((item) =>
+                  item.tipo === "otro" && item.otro
+                    ? item.otro.trim()
+                    : item.tipo,
+                )
+              : []
+          }
+        >
+          <SimpleFormIterator>
+            <SelectInput source="tipo" choices={tipoServicioChoices} />
+            <FormDataConsumer>
+              {({ scopedFormData }) =>
+                scopedFormData?.tipo === "otro" && (
+                  <TextInput
+                    source="otro"
+                    label="Especificar otro"
+                    sx={{ ml: 2 }}
+                  />
+                )
+              }
+            </FormDataConsumer>
+          </SimpleFormIterator>
+        </ArrayInput>
+
+        <NumberInput
+          source="tiempo_translado"
+          label="Tiempo de Traslado (minutos)"
+        />
+        <NumberInput
+          source="kilometros_recorridos"
+          label="Kilómetros Recorridos"
+        />
+
+        <Divider sx={{ my: 2 }} />
+
+        <Typography variant="h6" gutterBottom>
+          Resultados
+        </Typography>
+        <TextInput source="dictamen" label="Dictamen" multiline fullWidth />
+        <ArrayInput
+          source="trabaja_realizado"
+          label="Trabajos Realizados"
+          fullWidth
+        >
+          <SimpleFormIterator>
+            <TextInput label="Trabajo" />
+          </SimpleFormIterator>
+        </ArrayInput>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Typography variant="h6" gutterBottom>
+          Personas y Dependencias
+        </Typography>
+        <ArrayInput source="nombres_afectados" label="Nombres Afectados">
+          <SimpleFormIterator>
+            <TextInput label="Nombre" />
+          </SimpleFormIterator>
+        </ArrayInput>
+
+        <ArrayInput
+          source="dependencias_participantes"
+          label="Dependencias Participantes"
+        >
+          <SimpleFormIterator>
+            <TextInput label="Dependencia" />
+          </SimpleFormIterator>
+        </ArrayInput>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Typography variant="h6" gutterBottom>
+          Otros
+        </Typography>
+        <TextInput
+          source="observaciones"
+          label="Observaciones"
+          multiline
+          fullWidth
+        />
+        <TextInput source="otros" label="Otros" multiline fullWidth />
+      </SimpleForm>
+    </Create>
+  );
+};
+
+const ListActions = () => (
+  <TopToolbar>
+    <CreateButton />
+    <ExportButton />
+  </TopToolbar>
 );
 
-// import {
-//   Create,
-//   Form,
-//   TextInput,
-//   SaveButton,
-// } from "react-admin";
-// import { Grid } from "@mui/material";
-//
-// export const CreateMyReport = () => (
-//   <Create>
-//     <Form>
-//       <Grid container>
-//         <Grid item xs={6}>
-//           <TextInput source="title" />
-//         </Grid>
-//         <Grid item xs={6}>
-//           <TextInput source="author" />
-//         </Grid>
-//         <Grid item xs={12}>
-//           <SaveButton />
-//         </Grid>
-//       </Grid>
-//     </Form>
-//   </Create>
-// );
+export const MyReportList = () => (
+  <List actions={<ListActions />}>
+    <Datagrid rowClick="edit">
+      <TextField source="folio" />
+      <DateField source="tiempo_fecha" label="Fecha Reporte" showTime />
+      <NumberField source="turno" />
+      <TextField source="usuario_reportando" />
+      <TextField source="modo_de_activacion" />
+
+      <ArrayField source="tipo_servicio">
+        <SingleFieldList>
+          <ChipField source="" />
+        </SingleFieldList>
+      </ArrayField>
+
+      <DateField
+        source="tiempo_fecha_atencion"
+        label="Fecha Atención"
+        showTime
+      />
+      <NumberField source="tiempo_translado" label="Traslado (min)" />
+      <NumberField source="gravedad_emergencia" />
+      <NumberField source="kilometros_recorridos" />
+
+      <TextField source="trabaja_realizado" />
+      <TextField source="dictamen" />
+
+      <ArrayField source="nombres_afectados">
+        <SingleFieldList>
+          <ChipField source="" />
+        </SingleFieldList>
+      </ArrayField>
+
+      <ArrayField source="dependencias_participantes">
+        <SingleFieldList>
+          <ChipField source="" />
+        </SingleFieldList>
+      </ArrayField>
+
+      <TextField source="ubi" />
+
+      <TextField source="observaciones" />
+      <TextField source="otros" />
+    </Datagrid>
+  </List>
+);

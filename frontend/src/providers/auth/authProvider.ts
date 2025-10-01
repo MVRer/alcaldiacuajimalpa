@@ -45,16 +45,18 @@ export const authProvider: AuthProvider = {
     );
   }
 },
+
   logout: () => {
     localStorage.removeItem("user");
     localStorage.removeItem("auth");
     localStorage.removeItem("permissions");
     return Promise.resolve();
   },
+
   checkError: () => Promise.resolve(),
+
   checkAuth: () =>
     localStorage.getItem("user") ? Promise.resolve() : Promise.reject(),
-
 
 
   getPermissions: () => {
@@ -65,7 +67,19 @@ export const authProvider: AuthProvider = {
     const persistedUser = localStorage.getItem("user");
     const user = persistedUser ? JSON.parse(persistedUser) : null;
 
-    return Promise.resolve(user);
+    if (!user) {
+      return Promise.reject();
+    }
+
+    return Promise.resolve({
+      id: user.id,
+      userName: user.userName,
+      name: user.name,
+      fullName: user.fullName,
+      avatar: undefined, // TODO: optional, can be a URL look up later
+      turn: user.turn,
+      role: user.role,
+    });
   },
 };
 
