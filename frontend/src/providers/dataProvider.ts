@@ -57,4 +57,12 @@ export const dataProvider = {
             },
         }));
     },
+    delete: (resource: string, params: any) => {
+        return baseDataProvider.delete(resource, params).then((response) => ({
+            data: {
+                ...response.data,
+                id: response.data.id || response.data._id,
+            },
+        }));
+    },
 };

@@ -47,7 +47,7 @@ async function seedDatabase(db: any) {
                 eliminado_por: null,
                 role: "turnchief",
                 turnos: ["LV-8am3pm", "LV-3pm9pm"],
-                permissions: ['view_reports', 'create_reports', 'edit_reports', 'view_users'],
+                permissions: ['view_turn_reports', 'view_turn_users'],
             },
             {
                 nombre: "María",
@@ -63,7 +63,7 @@ async function seedDatabase(db: any) {
                 eliminado_por: null,
                 role: "paramedic",
                 turnos: ["LV-8am3pm", "LMV-9pm8am"],
-                permissions: ['view_reports', 'create_reports'],
+                permissions: ['view_my_reports', 'create_reports'],
             },
             {
                 nombre: "José Luis",
@@ -79,7 +79,7 @@ async function seedDatabase(db: any) {
                 eliminado_por: null,
                 role: "paramedic",
                 turnos: ["MJD-9pm-8am", "SDF-8am-9pm"],
-                permissions: ['view_reports', 'create_reports'],
+                permissions: ['view_my_reports', 'create_reports'],
             }
         ];
         await db.collection('users').insertMany(dummyUsers);

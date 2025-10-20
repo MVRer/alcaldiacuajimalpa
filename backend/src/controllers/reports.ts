@@ -1,9 +1,10 @@
 const database = require('../config/database/database');
 import authController from './auth';
+const { ObjectId } = require('mongodb');
 
 
 class ReportsController {
-    async getAllReports(req: any, res: any) { // getList
+    async getAllReports(req: any, res: any) {
 
         const user = await authController.verifyToken(req).catch((err) => {
             return res.status(401).json({ message: err.message });
@@ -44,7 +45,7 @@ class ReportsController {
             return res.status(403).json({ message: 'Forbidden' });
         }
         try {
-            const report = await database.db.collection('reports').findOne({ _id: id });
+            const report = await database.db.collection('reports').findOne({ _id: new ObjectId(id) });
             if (!report) {
                 return res.status(404).json({ message: 'Report not found' });
             }
@@ -83,7 +84,7 @@ class ReportsController {
 
         try {
             const updatedReport = await database.db.collection('reports').findOneAndUpdate(
-                { _id: id },
+                { _id: new ObjectId(id) },
                 { $set: {
                     folio, tiempo_fecha, tiempo_fecha_atencion, ubi, codigoPostal,
                     modo_de_activacion, gravedad_emergencia, tipo_servicio, tiempo_translado,
@@ -128,7 +129,12 @@ class ReportsController {
         }
 
         try {
-            const userInfo = await database.db.collection('users').findOne({ _id: user._id });
+            const existingReport = await database.db.collection('reports').findOne({ folio });
+            if (existingReport) {
+                return res.status(409).json({ message: 'A report with this folio already exists' });
+            }
+
+            const userInfo = await database.db.collection('users').findOne({ _id: new ObjectId(user._id) });
             if (!userInfo) {
                 return res.status(404).json({ message: 'User not found' });
             }
@@ -138,9 +144,9 @@ class ReportsController {
                 modo_de_activacion, gravedad_emergencia, tipo_servicio, tiempo_translado,
                 kilometros_recorridos, dictamen, trabaja_realizado, nombres_afectados,
                 dependencias_participantes, observaciones, otros,
-                createdBy: user._id,
+                createdBy: new ObjectId(user._id),
                 usuario_reportando: userInfo.nombre + ' ' + userInfo.apellidos,
-                turno: userInfo.turno,
+                turno: userInfo.turnos,
                 createdAt: new Date()
             };
             await database.db.collection('reports').insertOne(newReport);
@@ -159,7 +165,7 @@ class ReportsController {
             return res.status(403).json({ message: 'Forbidden' });
         }
         try {
-            const deletedReport = await database.db.collection('reports').findOneAndDelete({ _id: id });
+            const deletedReport = await database.db.collection('reports').findOneAndDelete({ _id: new ObjectId(id) });
             if (!deletedReport.value) {
                 return res.status(404).json({ message: 'Report not found' });
             }
@@ -169,6 +175,103 @@ class ReportsController {
             return res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    async getMyReports(req: any, res: any) { // getList PARAMEDICS
+        const user = await authController.verifyToken(req).catch((err) => {
+            return res.status(401).json({ message: err.message });
+        });
+        if (await authController.hasPermission(user._id, 'view_my_reports') === false) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+        try {
+            const query = { createdBy: new ObjectId(user._id) };
+
+            if ("_sort" in req.query) {
+                let sortBy = req.query._sort;
+                let order = req.query._order === 'ASC' ? 1 : -1;
+                let startNumber = Number(req.query._start) || 0;
+                let endNumber = Number(req.query._end) || 24;
+                let sorter: { [key: string]: number } = {};
+                sorter[sortBy] = order;
+                const reports = await database.db.collection('reports').find(query).sort(sorter).skip(startNumber).limit(endNumber - startNumber).toArray();
+                res.set('Access-Control-Expose-Headers', 'X-Total-Count');
+                const totalReports = await database.db.collection('reports').countDocuments(query);
+                res.set('X-Total-Count', totalReports);
+                return res.status(200).json(reports);
+            }
+            const reports = await database.db.collection('reports').find(query).toArray();
+            res.set('Access-Control-Expose-Headers', 'X-Total-Count');
+            res.set('X-Total-Count', reports.length);
+            return res.status(200).json(reports);
+        } catch (error) {
+            console.error('Error fetching my reports:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+    async getMyReportById(req: any, res: any) {
+        const { id } = req.params;
+        const user = await authController.verifyToken(req).catch((err) => {
+            return res.status(401).json({ message: err.message });
+        });
+        if (await authController.hasPermission(user._id, 'view_my_reports') === false) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+        try {
+            const report = await database.db.collection('reports').findOne({ _id: new ObjectId(id) });
+
+            if (!report) {
+                return res.status(404).json({ message: 'Report not found' });
+            }
+
+            if (report.createdBy && report.createdBy.toString() !== user._id) {
+                return res.status(403).json({ message: 'Access denied' });
+            }
+
+            return res.status(200).json(report);
+        } catch (error) {
+            console.error('Error fetching my report:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+    async getTurnReports(req: any, res: any) { // getList CHIEFTURN must be able to see reports created in the turn he has assigned
+        const user = await authController.verifyToken(req).catch((err) => {
+            return res.status(401).json({ message: err.message });
+        });
+        if (await authController.hasPermission(user._id, 'view_turn_reports') === false) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+        try {
+            const userInfo = await database.db.collection('users').findOne({ _id: new ObjectId(user._id) });
+            if (!userInfo) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const query = { turno: { $in: userInfo.turnos || [] } };
+
+            if ("_sort" in req.query) {
+                let sortBy = req.query._sort;
+                let order = req.query._order === 'ASC' ? 1 : -1;
+                let startNumber = Number(req.query._start) || 0;
+                let endNumber = Number(req.query._end) || 24;
+                let sorter: { [key: string]: number } = {};
+                sorter[sortBy] = order;
+                const reports = await database.db.collection('reports').find(query).sort(sorter).skip(startNumber).limit(endNumber - startNumber).toArray();
+                res.set('Access-Control-Expose-Headers', 'X-Total-Count');
+                const totalReports = await database.db.collection('reports').countDocuments(query);
+                res.set('X-Total-Count', totalReports);
+                return res.status(200).json(reports);
+            }
+            const reports = await database.db.collection('reports').find(query).toArray();
+            res.set('Access-Control-Expose-Headers', 'X-Total-Count');
+            res.set('X-Total-Count', reports.length);
+            return res.status(200).json(reports);
+        } catch (error) {
+            console.error('Error fetching turn reports:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+
 }
 
 export default new ReportsController();

@@ -27,6 +27,19 @@
   - `DELETE /reports/:id` (deleteReport)
 - **Description:** Allows users to permanently delete reports from the system.
 
+### `view_my_reports`
+- **Required for:** Viewing only reports created by the logged-in user
+- **Methods:**
+  - `GET /my-reports` (getMyReports)
+  - `GET /my-reports/:id` (getMyReportById)
+- **Description:** Allows paramedics to view only their own reports (filtered by createdBy).
+
+### `view_turn_reports`
+- **Required for:** Viewing reports from specific turns
+- **Methods:**
+  - `GET /turn-reports` (getTurnReports)
+- **Description:** Allows turn chiefs to view reports created in the turns they are assigned to (filtered by turno matching user's turnos array).
+
 ---
 
 ## Users Permissions
@@ -55,6 +68,12 @@
 - **Methods:**
   - `DELETE /users/:id` (deleteUser)
 - **Description:** Allows users to permanently delete users from the system.
+
+### `view_turn_users`
+- **Required for:** Viewing users from specific turns
+- **Methods:**
+  - `GET /turn-users` (getTurnUsers)
+- **Description:** Allows turn chiefs to view users assigned to the turns they manage (filtered by turnos matching user's turnos array).
 
 ---
 

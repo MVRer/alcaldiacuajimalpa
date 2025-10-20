@@ -1,6 +1,7 @@
 const database = require('../config/database/database');
 import authController from './auth';
 const bcrypt = require('bcrypt');
+const { ObjectId } = require('mongodb');
 
 
 class UsersController {
@@ -46,7 +47,7 @@ class UsersController {
             return res.status(403).json({ message: 'Forbidden' });
         }
         try {
-            const foundUser = await database.db.collection('users').findOne({ _id: id });
+            const foundUser = await database.db.collection('users').findOne({ _id: new ObjectId(id) });
             if (!foundUser) {
                 return res.status(404).json({ message: 'User not found' });
             }
@@ -68,7 +69,7 @@ class UsersController {
         }
 
         const { nombre, apellidos, fecha_nacimiento, telefono, correo_electronico, curp,
-                direccion, role, turnos, contrasenia } = req.body;
+                direccion, role, turnos, contrasenia, permissions } = req.body;
 
         if (!nombre || !apellidos || !correo_electronico) {
             return res.status(400).json({ message: 'Required fields: nombre, apellidos, correo_electronico' });
@@ -82,10 +83,14 @@ class UsersController {
             return res.status(400).json({ message: 'turnos must be an array' });
         }
 
+        if (permissions && !Array.isArray(permissions)) {
+            return res.status(400).json({ message: 'permissions must be an array' });
+        }
+
         try {
             const updateData: any = {
                 nombre, apellidos, fecha_nacimiento, telefono, correo_electronico,
-                curp, direccion, role, turnos, updatedAt: new Date()
+                curp, direccion, role, turnos, permissions, updatedAt: new Date()
             };
 
             if (contrasenia) {
@@ -93,7 +98,7 @@ class UsersController {
             }
 
             const updatedUser = await database.db.collection('users').findOneAndUpdate(
-                { _id: id },
+                { _id: new ObjectId(id) },
                 { $set: updateData },
                 { returnOriginal: false }
             );
@@ -117,7 +122,7 @@ class UsersController {
         }
 
         const { nombre, apellidos, fecha_nacimiento, telefono, correo_electronico, curp,
-                direccion, role, turnos, contrasenia } = req.body;
+                direccion, role, turnos, contrasenia, permissions } = req.body;
 
         if (!nombre || !apellidos || !correo_electronico || !contrasenia) {
             return res.status(400).json({ message: 'Required fields: nombre, apellidos, correo_electronico, contrasenia' });
@@ -131,6 +136,10 @@ class UsersController {
             return res.status(400).json({ message: 'turnos must be an array' });
         }
 
+        if (permissions && !Array.isArray(permissions)) {
+            return res.status(400).json({ message: 'permissions must be an array' });
+        }
+
         try {
             const existingUser = await database.db.collection('users').findOne({ correo_electronico });
             if (existingUser) {
@@ -141,7 +150,7 @@ class UsersController {
 
             const newUser = {
                 nombre, apellidos, fecha_nacimiento, telefono, correo_electronico,
-                curp, direccion, role, turnos,
+                curp, direccion, role, turnos, permissions: permissions || [],
                 password: hashedPassword,
                 agregado_por: user._id,
                 eliminado_por: null,
@@ -167,13 +176,45 @@ class UsersController {
             return res.status(403).json({ message: 'Forbidden' });
         }
         try {
-            const deletedUser = await database.db.collection('users').findOneAndDelete({ _id: id });
+            const deletedUser = await database.db.collection('users').findOneAndDelete({ _id: new ObjectId(id) });
             if (!deletedUser.value) {
                 return res.status(404).json({ message: 'User not found' });
             }
             return res.status(200).json({ message: 'User deleted successfully' });
         } catch (error) {
             console.error('Error deleting user:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+    async getTurnUsers(req: any, res: any) { // TurnChief must be able to see users that are asigned to the turns he is assigned 
+        const user = await authController.verifyToken(req).catch((err) => {
+            return res.status(401).json({ message: err.message });
+        });
+        if (await authController.hasPermission(user._id, 'view_turn_users') === false) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+        try {
+            if ("_sort" in req.query) {
+                let sortBy = req.query._sort;
+                let order = req.query._order === 'ASC' ? 1 : -1;
+                let startNumber = Number(req.query._start) || 0;
+                let endNumber = Number(req.query._end) || 24;
+                let sorter: { [key: string]: number } = {};
+                sorter[sortBy] = order;
+                const users = await database.db.collection('users').find().sort(sorter).skip(startNumber).limit(endNumber - startNumber).toArray();
+                const usersWithoutPasswords = users.map(({ password, ...userWithoutPassword } : { [key: string]: any }) => userWithoutPassword);
+                res.set('Access-Control-Expose-Headers', 'X-Total-Count');
+                const totalUsers = await database.db.collection('users').countDocuments();
+                res.set('X-Total-Count', totalUsers);
+                return res.status(200).json(usersWithoutPasswords);
+            }
+            const users = await database.db.collection('users').find().toArray();
+            const usersWithoutPasswords = users.map(({ password, ...userWithoutPassword } : { [key: string]: any }) => userWithoutPassword);
+            res.set('Access-Control-Expose-Headers', 'X-Total-Count');
+            res.set('X-Total-Count', usersWithoutPasswords.length);
+            return res.status(200).json(usersWithoutPasswords);
+        } catch (error) {
+            console.error('Error fetching users:', error);
             return res.status(500).json({ message: 'Internal server error' });
         }
     }

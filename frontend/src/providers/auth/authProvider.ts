@@ -17,18 +17,18 @@ export const authProvider: AuthProvider = {
     }
 
     const data = await response.json();
-    
+
     const user = {
       id: data.user._id,
       fullname: data.user.nombre + " " + data.user.apellidos,
       username: data.user.correo_electronico,
+      turnos: data.user.turnos || [],
+      role: data.user.role,
     };
-    
-    console.log('User data:', user);
-    
+
     const auth = data.token;
     const permissions = data.user.permissions;
-    
+
     // Guardar en localStorage
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("auth", "Bearer " + auth);
@@ -60,7 +60,8 @@ export const authProvider: AuthProvider = {
 
 
   getPermissions: () => {
-    return Promise.resolve(undefined);
+    const permissions = localStorage.getItem("permissions");
+    return Promise.resolve(permissions ? JSON.parse(permissions) : []);
   },
   
   getIdentity: () => {
@@ -73,11 +74,9 @@ export const authProvider: AuthProvider = {
 
     return Promise.resolve({
       id: user.id,
-      userName: user.userName,
-      name: user.name,
-      fullName: user.fullName,
-      avatar: undefined, // TODO: optional, can be a URL look up later
-      turn: user.turn,
+      fullName: user.fullname,
+      avatar: undefined,
+      turnos: user.turnos,
       role: user.role,
     });
   },

@@ -29,6 +29,16 @@ router.post('/reports', reportsController.createReport); // create
 router.put('/reports/:id', reportsController.updateReport); // update
 router.delete('/reports/:id', reportsController.deleteReport); // delete
 
+// My reports routes 
+
+router.get('/my-reports', reportsController.getMyReports); // getList
+router.get('/my-reports/:id', reportsController.getMyReportById); // getOne
+router.post('/my-reports', reportsController.createReport); // create
+
+// Turn reports routes 
+
+router.get('/turn-reports', reportsController.getTurnReports); // getList
+
 // Users routes
 
 router.get('/users', usersController.getAllUsers); // getList
