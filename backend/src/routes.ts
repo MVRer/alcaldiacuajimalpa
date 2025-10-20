@@ -1,6 +1,7 @@
-import { Router } from 'express'; 
+import { Router } from 'express';
 import authController from './controllers/auth';
 import reportsController from './controllers/reports';
+import usersController from './controllers/users';
 
 const router = Router();
 
@@ -22,11 +23,18 @@ delete	DELETE http://my.api.url/posts/123
 
 // Reports routes
 
-
 router.get('/reports', reportsController.getAllReports); // getList
 router.get('/reports/:id', reportsController.getReportById); // getOne
 router.post('/reports', reportsController.createReport); // create
 router.put('/reports/:id', reportsController.updateReport); // update
 router.delete('/reports/:id', reportsController.deleteReport); // delete
+
+// Users routes
+
+router.get('/users', usersController.getAllUsers); // getList
+router.get('/users/:id', usersController.getUserById); // getOne
+router.post('/users', usersController.createUser); // create
+router.put('/users/:id', usersController.updateUser); // update
+router.delete('/users/:id', usersController.deleteUser); // delete
 
 export default router; 

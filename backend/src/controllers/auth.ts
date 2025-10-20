@@ -1,6 +1,7 @@
 const database = require('../config/database/database');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { ObjectId } = require('mongodb');
 
 
 const secret = process.env.SECRET_KEY;
@@ -29,8 +30,7 @@ class Authentication {
             }
             
             const { password: userPassword, ...userWithoutPassword } = user;
-            const token = jwt.sign({ id: userWithoutPassword.id }, process.env.SECRET_KEY, { expiresIn: '3d' });
-            console.log('Generated Token for user:', userWithoutPassword.correo_electronico);
+            const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY, { expiresIn: '3d' });
             return res.status(200).json({ user: userWithoutPassword, token: token });
         } catch (error) {
             console.error('Database error:', error);
@@ -52,7 +52,7 @@ class Authentication {
     }
     async getPermissions(userId: string) {
         try {
-            const user = await database.db.collection('users').findOne({ _id: userId });
+            const user = await database.db.collection('users').findOne({ _id: new ObjectId(userId) });
             if (!user) {
                 throw new Error('User not found');
             }

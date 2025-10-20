@@ -20,7 +20,7 @@ export const App = () => (
     dashboard={Dashboard}
   >
     <Resource
-      name="mis-reportes"
+      name="reports"
       recordRepresentation="Mis reportes"
       options={{ label: "Mis Reportes" }}
       icon={AbcIcon}
@@ -30,17 +30,7 @@ export const App = () => (
       // show={}
     />
     <Resource
-      name="reportes"
-      recordRepresentation={(report) => `${report.turn}`}
-      options={{ label: "Reportes" }}
-      icon={AbcIcon}
-      list={ListGuesser}
-      // edit={}
-      // create={}
-      // show={}
-    />
-    <Resource
-      name="usuarios"
+      name="users"
       recordRepresentation="Usuarios"
       options={{ label: "Usuarios" }}
       icon={AbcIcon}
@@ -49,26 +39,22 @@ export const App = () => (
       create={UserCreate}
       show={UserShow}
     />
-    <Resource
+    {/* TODO: Add backend routes for these resources */}
+    {/* <Resource
       name="turnos"
       recordRepresentation={(turn) => `Turno: ${turn.schedule}`}
       options={{ label: "Turnos" }}
       icon={AbcIcon}
       list={ListGuesser}
-      // edit={}
-      // create={}
-      // show={}
-    />
-    <Resource
+    /> */}
+    {/* <Resource
       name="usuariossubordinados"
       recordRepresentation={(subordinado) => `${subordinado.nombre} ${subordinado.apellidos}`}
       options={{ label: "Subordinados" }}
       icon={AbcIcon}
       list={SubordinadosList}
-      // edit={}
-      // create={}
       show={SubordinadoShow}
-    />
+    /> */}
   </Admin>
 );
 
