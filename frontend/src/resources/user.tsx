@@ -1,4 +1,4 @@
-import { Create, FormTab, TextInput, TabbedForm, SelectInput, SelectArrayInput, List, Datagrid, TextField, Show, SimpleShowLayout, Edit, FormDataConsumer, required, minLength } from "react-admin";
+import { Create, FormTab, TextInput, TabbedForm, SelectInput, SelectArrayInput, List, Datagrid, TextField, Show, SimpleShowLayout, Edit, FormDataConsumer, required, minLength, ArrayField, SingleFieldList, ChipField } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useEffect } from "react";
 
@@ -123,7 +123,7 @@ export const UserList = () => (
             <TextField source="nombre" label="Nombre(s)" />
             <TextField source="apellidos" label="Apellidos" />
             <TextField source="telefono" label="Telefono" />
-            <TextField source="rol" label="Rol" />
+            <TextField source="role" label="Rol" />
             <TextField source="correo_electronico" label="Correo Electronico" />
             <TextField source="fecha_nacimiento" label="Fecha de Nacimiento" />
         </Datagrid>
@@ -137,15 +137,16 @@ export const UserShow = () => (
             <TextField source="apellidos" label="Apellidos" />
             <TextField source="telefono" label="Telefono"/>
             <TextField source="correo_electronico" label="Correo Electronico"/>
-            <TextField source="rol" label="Rol" />
+            <TextField source="role" label="Rol" />
+            <ArrayField source="turnos" label="Turnos">
+                <SingleFieldList>
+                    <ChipField source="$self" />
+                </SingleFieldList>
+            </ArrayField>
             <TextField source="fecha_nacimiento" label="Fecha de Nacimiento" />
             <TextField source="curp" label="CURP" />
             <TextField source="direccion" label="Direccion" />
             <TextField source="agregado_por" label="Agregado Por (ID)" />
-        
-
         </SimpleShowLayout>
-        
     </Show>
-    
 );
