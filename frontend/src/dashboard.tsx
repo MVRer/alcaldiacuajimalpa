@@ -71,7 +71,7 @@ const KPICard = ({ title, value, icon: Icon, loading }) => (
   </Card>
 );
 
-const Dashboard = () => {
+export const Dashboard = () => {
   const { permissions } = usePermissions();
 
   // Fetch data from all endpoints
@@ -349,5 +349,3 @@ const Dashboard = () => {
     </Box>
   );
 };
-
-export default Dashboard;
