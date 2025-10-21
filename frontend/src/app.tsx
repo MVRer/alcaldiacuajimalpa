@@ -30,8 +30,10 @@ export const App = () => {
         {(permissions: string[]) => {
             const isAdmin = permissions?.includes("*");
 
-            return [
-                (isAdmin || permissions?.includes("view_my_reports")) && (
+            const resources = [];
+
+            if (isAdmin || permissions?.includes("view_my_reports")) {
+                resources.push(
                     <Resource
                         key="my-reports"
                         name="my-reports"
@@ -42,9 +44,11 @@ export const App = () => {
                         create={CreateMyReport}
                         show={MyReportShow}
                     />
-                ),
+                );
+            }
 
-                (isAdmin || permissions?.includes("view_reports")) && (
+            if (isAdmin || permissions?.includes("view_reports")) {
+                resources.push(
                     <Resource
                         key="reports"
                         name="reports"
@@ -54,9 +58,11 @@ export const App = () => {
                         list={MyReportList}
                         show={MyReportShow}
                     />
-                ),
+                );
+            }
 
-                (isAdmin || permissions?.includes("view_turn_reports")) && (
+            if (isAdmin || permissions?.includes("view_turn_reports")) {
+                resources.push(
                     <Resource
                         key="turn-reports"
                         name="turn-reports"
@@ -66,9 +72,11 @@ export const App = () => {
                         list={MyReportList}
                         show={MyReportShow}
                     />
-                ),
+                );
+            }
 
-                (isAdmin || permissions?.includes("view_users")) && (
+            if (isAdmin || permissions?.includes("view_users")) {
+                resources.push(
                     <Resource
                         key="users"
                         name="users"
@@ -80,20 +88,24 @@ export const App = () => {
                         create={UserCreate}
                         show={UserShow}
                     />
-                ),
+                );
+            }
 
-                (isAdmin || permissions?.includes("view_turn_users")) && (
+            if (isAdmin || permissions?.includes("view_turn_users")) {
+                resources.push(
                     <Resource
                         key="turn-users"
                         name="turn-users"
-                        recordRepresentation="Subordinados"
-                        options={{label: "Subordinados"}}
+                        recordRepresentation="Usuarios de mi turno"
+                        options={{label: "Usuarios de Mi Turno"}}
                         icon={SupervisedUserCircleIcon}
                         list={SubordinadosList}
                         show={SubordinadoShow}
                     />
-                ),
-            ];
+                );
+            }
+
+            return resources;
         }}
     </Admin>
 }

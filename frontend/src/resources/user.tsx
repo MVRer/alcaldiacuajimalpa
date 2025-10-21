@@ -1,4 +1,4 @@
-import { Create, FormTab, TextInput, TabbedForm, SelectInput, SelectArrayInput, List, Datagrid, TextField, Show, SimpleShowLayout, Edit, FormDataConsumer, required, minLength } from "react-admin";
+import { Create, FormTab, TextInput, TabbedForm, SelectInput, SelectArrayInput, List, Datagrid, TextField, Show, SimpleShowLayout, Edit, FormDataConsumer, required, minLength, ArrayField, SingleFieldList, ChipField, FunctionField } from "react-admin";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useEffect } from "react";
 
@@ -6,6 +6,20 @@ const rolePermissions: { [key: string]: string[] } = {
     admin: ['*'],
     turnchief: ['view_turn_reports', 'view_turn_users'],
     paramedic: ['view_my_reports', 'create_reports']
+};
+
+const turnoChoices = [
+    { id: 'LV-8am3pm', name: 'Lunes y viernes 8:00am - 3:00pm' },
+    { id: 'LV-3pm9pm', name: 'Lunes y viernes 3:00pm - 9:00pm' },
+    { id: 'LMV-9pm8am', name: 'Lunes, miercoles y viernes 9:00pm - 8:00am' },
+    { id: 'MJD-9pm-8am', name: 'Martes, jueces y domingo 9:00pm - 8:00am' },
+    { id: 'SDF-8am-9pm', name: 'Sabado, domingo y festivos 8:00am - 9:00pm' },
+    { id: 'SDF-8pm-8am', name: 'Sabado, domingo y festivos 8:00pm - 8:00am' },
+];
+
+const getTurnoName = (id: string) => {
+    const turno = turnoChoices.find(t => t.id === id);
+    return turno ? turno.name : id;
 };
 
 const allPermissions = [
@@ -123,7 +137,7 @@ export const UserList = () => (
             <TextField source="nombre" label="Nombre(s)" />
             <TextField source="apellidos" label="Apellidos" />
             <TextField source="telefono" label="Telefono" />
-            <TextField source="rol" label="Rol" />
+            <TextField source="role" label="Rol" />
             <TextField source="correo_electronico" label="Correo Electronico" />
             <TextField source="fecha_nacimiento" label="Fecha de Nacimiento" />
         </Datagrid>
@@ -137,15 +151,19 @@ export const UserShow = () => (
             <TextField source="apellidos" label="Apellidos" />
             <TextField source="telefono" label="Telefono"/>
             <TextField source="correo_electronico" label="Correo Electronico"/>
-            <TextField source="rol" label="Rol" />
+            <TextField source="role" label="Rol" />
+            <FunctionField
+                label="Turnos"
+                render={(record: any) =>
+                    record.turnos && record.turnos.length > 0
+                        ? record.turnos.map((t: string) => getTurnoName(t)).join(', ')
+                        : 'N/D'
+                }
+            />
             <TextField source="fecha_nacimiento" label="Fecha de Nacimiento" />
             <TextField source="curp" label="CURP" />
             <TextField source="direccion" label="Direccion" />
             <TextField source="agregado_por" label="Agregado Por (ID)" />
-        
-
         </SimpleShowLayout>
-        
     </Show>
-    
 );

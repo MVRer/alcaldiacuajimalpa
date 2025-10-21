@@ -13,7 +13,7 @@ const MyMenu = (props) => {
       <Menu.ResourceItem name="reports" />
       <Menu.ResourceItem name="turn-reports" />
       <Menu.ResourceItem name="users" />
-      <Menu.ResourceItem name="subordinados" />
+      <Menu.ResourceItem name="turn-users" />
     </Menu>
   );
 };
