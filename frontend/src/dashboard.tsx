@@ -1,6 +1,5 @@
 import * as React from "react";
-import { useGetList } from "react-admin";
-import { usePermissions, Title } from 'react-admin';
+import { useGetList, usePermissions } from "react-admin";
 import { Navigate } from 'react-router-dom';
 import {
   Box,
@@ -14,7 +13,24 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+} from "recharts";
 
 const reportWayChoices = [
   { id: "C5", name: "C5" },
@@ -27,29 +43,40 @@ const reportWayChoices = [
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 export const Dashboard = () => {
-  const isLoading = false;
-    const { permissions } = usePermissions();
+  const { permissions } = usePermissions();
 
-    if (!permissions?.includes('*')) {
-      return <Navigate to="/#" replace />;
-    }
+  if (!permissions?.includes('*')) {
+    return <Navigate to="/#" replace />;
+  }
 
-  const { data: reports } = useGetList("reports", {
+  const { data: reports, isLoading } = useGetList("reports", {
     pagination: { page: 1, perPage: 1000 },
     sort: { field: "id", order: "DESC" },
+  });
+
+  // NEW: Fetch users data
+  const { data: users, isLoading: usersLoading } = useGetList("users", {
+    pagination: { page: 1, perPage: 1000 },
+  });
+
+  // NEW: Fetch turn-reports data
+  const { data: turnReports, isLoading: turnReportsLoading } = useGetList("turn-reports", {
+    pagination: { page: 1, perPage: 1000 },
   });
 
   if (isLoading) return <p>Cargando...</p>;
   if (!reports) return <p>No hay reportes</p>;
 
   const total = reports.length;
+  const totalUsers = users?.length || 0;
+
   const avgTraslado =
     reports.reduce((sum, r) => sum + (r.tiempo_translado || 0), 0) / total || 0;
   const avgKm =
     reports.reduce((sum, r) => sum + (r.kilometros_recorridos || 0), 0) /
-      total || 0;
+    total || 0;
 
-  const modoCounts = reports.reduce<Record<string, number>>((acc, r) => {
+  const modoCounts = reports.reduce((acc, r) => {
     const modo = r.modo_de_activacion || "otro";
     acc[modo] = (acc[modo] || 0) + 1;
     return acc;
@@ -60,12 +87,39 @@ export const Dashboard = () => {
     value: modoCounts[choice.id] || 0,
   }));
 
+  // NEW: Prepare daily reports data (Reportes por Día)
+  const dailyCounts = {};
+  reports.forEach((r) => {
+    if (r.tiempo_fecha) {
+      const date = r.tiempo_fecha.split('T')[0]; // Extract YYYY-MM-DD
+      dailyCounts[date] = (dailyCounts[date] || 0) + 1;
+    }
+  });
+  const dailyReportsData = Object.entries(dailyCounts)
+    .map(([date, count]) => ({ date, count }))
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-30); // Last 30 days
+
+  // NEW: Prepare radar chart data (Distribución por Turno)
+  const turnCounts = {};
+  if (turnReports) {
+    turnReports.forEach((r) => {
+      const turn = r.turno || "Sin especificar";
+      turnCounts[turn] = (turnCounts[turn] || 0) + 1;
+    });
+  }
+  const turnData = Object.entries(turnCounts).map(([turno, cantidad]) => ({
+    turno,
+    cantidad,
+  }));
+
   const recentReports = [...reports].slice(0, 5);
 
   return (
     <Box p={3}>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={4}>
+        {/* Top Row: 4 KPI Cards */}
+        <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h6">Total Reportes</Typography>
@@ -73,7 +127,20 @@ export const Dashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={4}>
+
+        {/* NEW: Total Usuarios Card */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">Total Usuarios</Typography>
+              <Typography variant="h4">
+                {usersLoading ? "..." : totalUsers}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h6">Tiempo Prom. Traslado (min)</Typography>
@@ -81,7 +148,8 @@ export const Dashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={4}>
+
+        <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h6">Km Promedio Recorridos</Typography>
@@ -90,6 +158,39 @@ export const Dashboard = () => {
           </Card>
         </Grid>
 
+        {/* NEW: Line Chart - Reportes por Día */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Reportes por Día
+              </Typography>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={dailyReportsData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                  />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#8884d8"
+                    name="Reportes"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Existing Pie Chart */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
@@ -121,7 +222,39 @@ export const Dashboard = () => {
           </Card>
         </Grid>
 
+        {/* NEW: Radar Chart - Distribución de Reportes Urbanos */}
         <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Distribución de Reportes Urbanos
+              </Typography>
+              {turnReportsLoading ? (
+                <Typography>Cargando...</Typography>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <RadarChart data={turnData}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="turno" />
+                    <PolarRadiusAxis />
+                    <Radar
+                      name="Cantidad de Reportes"
+                      dataKey="cantidad"
+                      stroke="#8884d8"
+                      fill="#8884d8"
+                      fillOpacity={0.6}
+                    />
+                    <Tooltip />
+                    <Legend />
+                  </RadarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Existing Recent Reports Table */}
+        <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
