@@ -67,7 +67,7 @@ class ReportsController {
             res.set('Access-Control-Expose-Headers', 'X-Total-Count');
             res.set('X-Total-Count', reports.length);
             return res.status(200).json(reports);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching reports:', error);
             logger.error(`Error fetching reports: ${error.message}`, { stack: error.stack });
             return res.status(500).json({ message: 'Internal server error' });
@@ -108,7 +108,7 @@ class ReportsController {
 
             logger.info(`Successfully fetched report with ID: ${id}`);
             return res.status(200).json(report);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching report:', error);
             logger.error(`Error fetching report ${id}: ${error.message}`, { stack: error.stack });
             return res.status(500).json({ message: 'Internal server error' });
@@ -186,7 +186,7 @@ class ReportsController {
 
             logger.info(`Report ${id} updated successfully by user ${user._id}.`);
             return res.status(200).json(updatedReport.value);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating report:', error);
             logger.error(`Error updating report ${id}: ${error.message}`, { stack: error.stack });
             return res.status(500).json({ message: 'Internal server error' });
@@ -270,7 +270,7 @@ class ReportsController {
 
             logger.info(`Report with folio ${folio} created successfully.`);
             return res.status(201).json(newReport);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error creating report:', error);
             logger.error(`Error creating report: ${error.message}`, { stack: error.stack });
             return res.status(500).json({ message: 'Internal server error' });
@@ -312,7 +312,7 @@ class ReportsController {
 
             logger.info(`Report ${id} deleted successfully by user ${user._id}.`);
             return res.status(200).json({ message: 'Report deleted successfully' });
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting report:', error);
             logger.error(`Error deleting report ${id}: ${error.message}`, { stack: error.stack });
             return res.status(500).json({ message: 'Internal server error' });
@@ -382,7 +382,7 @@ class ReportsController {
             res.set('Access-Control-Expose-Headers', 'X-Total-Count');
             res.set('X-Total-Count', reports.length);
             return res.status(200).json(reports);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching my reports:', error);
             logger.error(`Error fetching personal reports for user ${user._id}: ${error.message}`, { stack: error.stack });
             return res.status(500).json({ message: 'Internal server error' });
@@ -429,7 +429,7 @@ class ReportsController {
 
             logger.info(`User ${user._id} successfully fetched personal report ${id}.`);
             return res.status(200).json(report);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching my report:', error);
             logger.error(`Error fetching personal report ${id} for user ${user._id}: ${error.message}`, { stack: error.stack });
             return res.status(500).json({ message: 'Internal server error' });
@@ -507,7 +507,7 @@ class ReportsController {
             res.set('Access-Control-Expose-Headers', 'X-Total-Count');
             res.set('X-Total-Count', reports.length);
             return res.status(200).json(reports);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching turn reports:', error);
             logger.error(`Error fetching turn reports for user ${user._id}: ${error.message}`, { stack: error.stack });
             return res.status(500).json({ message: 'Internal server error' });
@@ -568,7 +568,7 @@ class ReportsController {
 
             logger.info(`User ${user._id} successfully fetched turn report ${id}.`);
             return res.status(200).json(report);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching turn report:', error);
             logger.error(`Error fetching turn report ${id} for user ${user._id}: ${error.message}`, { stack: error.stack });
             return res.status(500).json({ message: 'Internal server error' });
