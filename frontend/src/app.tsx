@@ -25,6 +25,7 @@ export const App = () => {
         layout={layout}
     >
         {(permissions: string[]) => {
+            console.log('Permissions received in App:', permissions, typeof permissions);
             const isAdmin = permissions?.includes("*");
 
             return [
@@ -83,8 +84,8 @@ export const App = () => {
                     <Resource
                         key="turn-users"
                         name="turn-users"
-                        recordRepresentation="Subordinados"
-                        options={{label: "Subordinados"}}
+                        recordRepresentation="Usuarios de mi turno"
+                        options={{label: "Usuarios de Mi Turno"}}
                         icon={SupervisedUserCircleIcon}
                         list={SubordinadosList}
                         show={SubordinadoShow}
