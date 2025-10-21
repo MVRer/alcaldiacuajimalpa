@@ -79,10 +79,10 @@ export const App = () => {
                     />
                 ),
 
-                (isAdmin || permissions?.includes("view_subordinados")) && (
+                (isAdmin || permissions?.includes("view_turn_users")) && (
                     <Resource
-                        key="subordinados"
-                        name="subordinados"
+                        key="turn-users"
+                        name="turn-users"
                         recordRepresentation="Subordinados"
                         options={{label: "Subordinados"}}
                         icon={SupervisedUserCircleIcon}

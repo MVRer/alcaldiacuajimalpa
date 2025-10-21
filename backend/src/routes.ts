@@ -47,6 +47,10 @@ router.get('/users/:id', usersController.getUserById); // getOne
 router.post('/users', usersController.createUser); // create
 router.put('/users/:id', usersController.updateUser); // update
 router.delete('/users/:id', usersController.deleteUser); // delete
-router.get(`/users/turns/:id`, usersController.getTurnUsers)
+
+// Turn users routes
+
+router.get('/turn-users', usersController.getTurnUsers); // getList
+router.get('/turn-users/:id', usersController.getTurnUserById); // getOne
 
 export default router; 

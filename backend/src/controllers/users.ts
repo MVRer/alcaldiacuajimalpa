@@ -414,6 +414,40 @@ class UsersController {
             return res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    async getTurnUserById(req: any, res: any) {
+        const { id } = req.params;
+        const user = await authController.verifyToken(req).catch((err) => {
+            return res.status(401).json({ message: err.message });
+        });
+        if (await authController.hasPermission(user._id, 'view_turn_users') === false) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+        try {
+            const foundUser = await database.db.collection('users').findOne({ _id: new ObjectId(id) });
+            if (!foundUser) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const currentUserInfo = await database.db.collection('users').findOne({ _id: new ObjectId(user._id) });
+            if (!currentUserInfo) {
+                return res.status(404).json({ message: 'Current user not found' });
+            }
+
+            const currentUserTurnos = currentUserInfo.turnos || [];
+            const foundUserTurnos = foundUser.turnos || [];
+
+            if (!currentUserTurnos.some((turn: string) => foundUserTurnos.includes(turn))) {
+                return res.status(403).json({ message: 'Access denied' });
+            }
+
+            const { password, ...userWithoutPassword } = foundUser;
+            return res.status(200).json(userWithoutPassword);
+        } catch (error) {
+            console.error('Error fetching user:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 }
 
 export default new UsersController();
