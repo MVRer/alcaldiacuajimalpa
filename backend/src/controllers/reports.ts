@@ -319,7 +319,7 @@ class ReportsController {
         }
     }
 
-    async getMyReports(req: any, res: any) { // getList PARAMEDICS
+    async getMyReports(req: any, res: any) {
         logger.info('ReportsController.getMyReports called');
         logger.debug(`Request query: ${JSON.stringify(req.query)}`);
 
@@ -436,7 +436,7 @@ class ReportsController {
         }
     }
 
-    async getTurnReports(req: any, res: any) { // getList CHIEFTURN must be able to see reports created in the turn he has assigned
+    async getTurnReports(req: any, res: any) {
         logger.info('ReportsController.getTurnReports called');
         logger.debug(`Request query: ${JSON.stringify(req.query)}`);
 

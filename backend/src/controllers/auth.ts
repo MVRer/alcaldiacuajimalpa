@@ -7,10 +7,6 @@ const logger = require(`../utils/logger`);
 const secret = process.env.SECRET_KEY;
 
 
-// const expressJwt = require('express-jwt');
-// To protect routes -> const jwtMiddleware = expressJwt({ secret, algorithms: ['HS256'] });
-
-
 class Authentication {
     async login(req, res) {
         const { username, password } = req.body;

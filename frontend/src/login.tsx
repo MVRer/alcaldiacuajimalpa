@@ -78,7 +78,7 @@ export const CustomLoginPage = () => {
             boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
           }}
         >
-          {/* Header with Logo */}
+
           <Box
             sx={{
               backgroundColor: '#2d5016',
@@ -120,7 +120,7 @@ export const CustomLoginPage = () => {
             </Typography>
           </Box>
 
-          {/* Form Section */}
+
           <CardContent sx={{ p: 5 }}>
             <Typography
               variant="h6"

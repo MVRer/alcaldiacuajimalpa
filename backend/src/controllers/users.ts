@@ -5,6 +5,7 @@ const { ObjectId } = require('mongodb');
 const logger = require(`../utils/logger`);
 
 
+
 class UsersController {
     async getAllUsers(req: any, res: any) {
         logger.info('ReportsController.getAllUsers called');
@@ -331,7 +332,7 @@ class UsersController {
         }
     }
 
-    async getTurnUsers(req: any, res: any) { // TurnChief must be able to see users that are assigned to the turns he is assigned
+    async getTurnUsers(req: any, res: any) {
         logger.info('ReportsController.getTurnUsers called');
         logger.debug(`Request query: ${JSON.stringify(req.query)}`);
 

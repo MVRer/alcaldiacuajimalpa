@@ -54,12 +54,12 @@ export const Dashboard = () => {
     sort: { field: "id", order: "DESC" },
   });
 
-  // NEW: Fetch users data
+
   const { data: users, isLoading: usersLoading } = useGetList("users", {
     pagination: { page: 1, perPage: 1000 },
   });
 
-  // NEW: Fetch turn-reports data
+
   const { data: turnReports, isLoading: turnReportsLoading } = useGetList("turn-reports", {
     pagination: { page: 1, perPage: 1000 },
   });
@@ -87,20 +87,20 @@ export const Dashboard = () => {
     value: modoCounts[choice.id] || 0,
   }));
 
-  // NEW: Prepare daily reports data (Reportes por Día)
+
   const dailyCounts = {};
   reports.forEach((r) => {
     if (r.tiempo_fecha) {
-      const date = r.tiempo_fecha.split('T')[0]; // Extract YYYY-MM-DD
+      const date = r.tiempo_fecha.split('T')[0];
       dailyCounts[date] = (dailyCounts[date] || 0) + 1;
     }
   });
   const dailyReportsData = Object.entries(dailyCounts)
     .map(([date, count]) => ({ date, count }))
     .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(-30); // Last 30 days
+    .slice(-30);
 
-  // NEW: Prepare radar chart data (Distribución por Turno)
+
   const turnCounts = {};
   if (turnReports) {
     turnReports.forEach((r) => {
