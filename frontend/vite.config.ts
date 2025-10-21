@@ -6,10 +6,18 @@ import path from "path";
 const keyPath = path.resolve(__dirname, "certs/selfsigned.key");
 const certPath = path.resolve(__dirname, "certs/selfsigned.crt");
 
-const httpsConfig = fs.existsSync(keyPath) && fs.existsSync(certPath) ? {
-  key: fs.readFileSync(keyPath),
-  cert: fs.readFileSync(certPath),
-} : undefined;
+let httpsConfig: any = undefined;
+
+try {
+  if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+    httpsConfig = {
+      key: fs.readFileSync(keyPath),
+      cert: fs.readFileSync(certPath),
+    };
+  }
+} catch (error) {
+  console.warn("HTTPS certs not available, running without SSL");
+}
 
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
