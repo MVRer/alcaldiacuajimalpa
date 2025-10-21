@@ -47,5 +47,6 @@ router.get('/users/:id', usersController.getUserById); // getOne
 router.post('/users', usersController.createUser); // create
 router.put('/users/:id', usersController.updateUser); // update
 router.delete('/users/:id', usersController.deleteUser); // delete
+router.get(`/users/turns/:id`, usersController.getTurnUsers)
 
 export default router; 
