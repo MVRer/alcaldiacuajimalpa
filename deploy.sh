@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 sudo apt update
 sudo apt install git nano curl unzip libatomic1 -y
@@ -29,7 +29,7 @@ if [ "$app_type" = "f" ]; then
     cd alcaldiacuajimalpa/frontend
 
     mkdir -p certs
-    sudo cp /etc/ssl/private/selfsigned.key certs/selfsigned.key
+    sudo cfp /etc/ssl/private/selfsigned.key certs/selfsigned.key
     sudo cp /etc/ssl/certs/selfsigned.crt certs/selfsigned.crt
     sudo chown $USER certs/selfsigned.key
     sudo chown $USER certs/selfsigned.crt

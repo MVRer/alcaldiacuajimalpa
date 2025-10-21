@@ -3,6 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "local": "vite --config vite.config.local.ts",
     "build": "vite build",
     "serve": "vite preview",
     "type-check": "tsc --noEmit",

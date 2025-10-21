@@ -15,6 +15,8 @@ import { UserCreate, UserEdit, UserList, UserShow } from "./resources/user";
 import { SubordinadoShow, SubordinadosList } from "./resources/subordinados";
 
 import layout from "./layout";
+import loginPage from "./login.tsx";
+
 
 export const App = () => {
     return <Admin
@@ -23,6 +25,7 @@ export const App = () => {
         i18nProvider={i18nProvider}
         dashboard={Dashboard}
         layout={layout}
+        loginPage={loginPage}
     >
         {(permissions: string[]) => {
             const isAdmin = permissions?.includes("*");
