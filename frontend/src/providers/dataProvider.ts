@@ -12,7 +12,7 @@ const httpClient = (url: string, options: any = {}) => {
     return fetchUtils.fetchJson(url, options);
 };
 
-const baseDataProvider = jsonServerProvider('http://localhost:3000', httpClient);
+const baseDataProvider = jsonServerProvider(import.meta.env.VITE_API_URL, httpClient);
 
 export const dataProvider = {
     ...baseDataProvider,
