@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import fs from "fs";
+import path from "path";
 
-const keyPath = "/etc/ssl/private/selfsigned.key";
-const certPath = "/etc/ssl/certs/selfsigned.crt";
+const keyPath = path.resolve(__dirname, "certs/selfsigned.key");
+const certPath = path.resolve(__dirname, "certs/selfsigned.crt");
 
 const httpsConfig = fs.existsSync(keyPath) && fs.existsSync(certPath) ? {
   key: fs.readFileSync(keyPath),

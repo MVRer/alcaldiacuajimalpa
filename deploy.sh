@@ -23,10 +23,16 @@ read app_type
 
 if [ "$app_type" = "f" ]; then
     echo "Frontend deployment selected"
-    
+
     sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/selfsigned.key -out /etc/ssl/certs/selfsigned.crt -subj "/C=MX/ST=CDMX/L=Mexico/O=Org/CN=localhost"
-    
+
     cd alcaldiacuajimalpa/frontend
+
+    mkdir -p certs
+    sudo cp /etc/ssl/private/selfsigned.key certs/
+    sudo cp /etc/ssl/certs/selfsigned.crt certs/
+    sudo chown $USER:$USER certs/selfsigned.key certs/selfsigned.crt
+
     cp .env.example .env
     bun install
     bun run build
