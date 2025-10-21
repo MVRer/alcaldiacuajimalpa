@@ -25,8 +25,9 @@ export const App = () => {
         layout={layout}
     >
         {(permissions: string[]) => {
-            console.log('Permissions received in App:', permissions, typeof permissions);
             const isAdmin = permissions?.includes("*");
+            const canViewTurnUsers = isAdmin || (permissions && permissions.includes("view_turn_users"));
+            console.log('isAdmin:', isAdmin, 'canViewTurnUsers:', canViewTurnUsers);
 
             return [
                 (isAdmin || permissions?.includes("view_my_reports")) && (
@@ -80,7 +81,7 @@ export const App = () => {
                     />
                 ),
 
-                (isAdmin || permissions?.includes("view_turn_users")) && (
+                canViewTurnUsers && (
                     <Resource
                         key="turn-users"
                         name="turn-users"
