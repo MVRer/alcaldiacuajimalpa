@@ -29,11 +29,12 @@ if [ "$app_type" = "f" ]; then
     cd alcaldiacuajimalpa/frontend
 
     mkdir -p certs
-    sudo cp /etc/ssl/private/selfsigned.key certs/
-    sudo cp /etc/ssl/certs/selfsigned.crt certs/
-    sudo chown -R $USER:$USER certs/
-    chmod 644 certs/selfsigned.crt
-    chmod 600 certs/selfsigned.key
+    sudo cp /etc/ssl/private/selfsigned.key certs/selfsigned.key
+    sudo cp /etc/ssl/certs/selfsigned.crt certs/selfsigned.crt
+    sudo chown $USER certs/selfsigned.key
+    sudo chown $USER certs/selfsigned.crt
+    sudo chmod 644 certs/selfsigned.crt
+    sudo chmod 600 certs/selfsigned.key
 
     cp .env.example .env
     bun install
