@@ -31,7 +31,9 @@ if [ "$app_type" = "f" ]; then
     mkdir -p certs
     sudo cp /etc/ssl/private/selfsigned.key certs/
     sudo cp /etc/ssl/certs/selfsigned.crt certs/
-    sudo chown $USER:$USER certs/selfsigned.key certs/selfsigned.crt
+    sudo chown -R $USER:$USER certs/
+    chmod 644 certs/selfsigned.crt
+    chmod 600 certs/selfsigned.key
 
     cp .env.example .env
     bun install
