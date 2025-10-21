@@ -27,15 +27,14 @@ const reportWayChoices = [
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 export const Dashboard = () => {
-    const { permissions, isLoading1 } = usePermissions();
-
-    if (isLoading1) return null;
+  const isLoading = false;
+    const { permissions } = usePermissions();
 
     if (!permissions?.includes('*')) {
-      return <Navigate to="/my-reports" replace />;
+      return <Navigate to="/#" replace />;
     }
 
-  const { data: reports, isLoading } = useGetList("reportes", {
+  const { data: reports } = useGetList("reports", {
     pagination: { page: 1, perPage: 1000 },
     sort: { field: "id", order: "DESC" },
   });
