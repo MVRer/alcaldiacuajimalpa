@@ -6,6 +6,9 @@ out
 dist
 *.tgz
 
+# SSL certificates
+certs/
+
 # code coverage
 coverage
 *.lcov

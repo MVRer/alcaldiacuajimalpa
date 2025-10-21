@@ -43,7 +43,7 @@ if [ "$app_type" = "f" ]; then
 
 elif [ "$app_type" = "b" ]; then
     echo "Backend deployment selected"
-    
+
     sudo apt install -y curl gnupg
     curl -fsSL https://pgp.mongodb.com/server-8.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg
     echo "deb [signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/8.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
@@ -51,10 +51,19 @@ elif [ "$app_type" = "b" ]; then
     sudo apt install -y mongodb-org
     sudo systemctl start mongod
     sudo systemctl enable mongod
-    
+
     sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/selfsigned.key -out /etc/ssl/certs/selfsigned.crt -subj "/C=MX/ST=CDMX/L=Mexico/O=Org/CN=localhost"
-    
+
     cd alcaldiacuajimalpa/backend
+
+    mkdir -p certs
+    sudo cp /etc/ssl/private/selfsigned.key certs/selfsigned.key
+    sudo cp /etc/ssl/certs/selfsigned.crt certs/selfsigned.crt
+    sudo chown $USER certs/selfsigned.key
+    sudo chown $USER certs/selfsigned.crt
+    sudo chmod 644 certs/selfsigned.crt
+    sudo chmod 600 certs/selfsigned.key
+
     cp .env.example .env
     bun install
     bun run start
