@@ -35,9 +35,10 @@ router.get('/my-reports', reportsController.getMyReports); // getList
 router.get('/my-reports/:id', reportsController.getMyReportById); // getOne
 router.post('/my-reports', reportsController.createReport); // create
 
-// Turn reports routes 
+// Turn reports routes
 
 router.get('/turn-reports', reportsController.getTurnReports); // getList
+router.get('/turn-reports/:id', reportsController.getTurnReportById); // getOne
 
 // Users routes
 

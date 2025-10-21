@@ -271,6 +271,40 @@ class ReportsController {
         }
     }
 
+    async getTurnReportById(req: any, res: any) {
+        const { id } = req.params;
+        const user = await authController.verifyToken(req).catch((err) => {
+            return res.status(401).json({ message: err.message });
+        });
+        if (await authController.hasPermission(user._id, 'view_turn_reports') === false) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+        try {
+            const report = await database.db.collection('reports').findOne({ _id: new ObjectId(id) });
+
+            if (!report) {
+                return res.status(404).json({ message: 'Report not found' });
+            }
+
+            const userInfo = await database.db.collection('users').findOne({ _id: new ObjectId(user._id) });
+            if (!userInfo) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const userTurnos = userInfo.turnos || [];
+            const reportTurno = report.turno;
+
+            if (!userTurnos.some((turn: string) => reportTurno && reportTurno.includes(turn))) {
+                return res.status(403).json({ message: 'Access denied' });
+            }
+
+            return res.status(200).json(report);
+        } catch (error) {
+            console.error('Error fetching turn report:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
 
 }
 
