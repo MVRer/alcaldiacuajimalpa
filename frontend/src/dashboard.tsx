@@ -1,5 +1,7 @@
 import * as React from "react";
 import { useGetList } from "react-admin";
+import { usePermissions, Title } from 'react-admin';
+import { Navigate } from 'react-router-dom';
 import {
   Box,
   Grid,
@@ -25,6 +27,14 @@ const reportWayChoices = [
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 export const Dashboard = () => {
+    const { permissions, isLoading1 } = usePermissions();
+
+    if (isLoading1) return null;
+
+    if (!permissions?.includes('*')) {
+      return <Navigate to="/my-reports" replace />;
+    }
+
   const { data: reports, isLoading } = useGetList("reportes", {
     pagination: { page: 1, perPage: 1000 },
     sort: { field: "id", order: "DESC" },
