@@ -1,27 +1,31 @@
-import router from "./routes";
+import { USE_HTTPS, PORT, SSL_KEY_PATH, SSL_CERT_PATH } from "./config/constants.ts";
+
 import https from "https";
 import fs from "fs";
+import cors from "cors";
+import express from "express";
 
-require('dotenv').config();
-var cors = require("cors");
-const express = require("express");
-const PORT = process.env.PORT || 3000;
+import router from "./routes";
+
+
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 app.use(router);
 
-const database = require("./config/database/database");
+import database from "./config/database/database";
+import logger from "./utils/logger.ts";
 
 
 async function StartApp() {
     try {
         await database.connect();
 
-        if (process.env.USE_HTTPS === 'true') {
+        if (USE_HTTPS) {
             const httpsOptions = {
-                key: fs.readFileSync(process.env.SSL_KEY_PATH || '/etc/ssl/private/selfsigned.key'),
-                cert: fs.readFileSync(process.env.SSL_CERT_PATH || '/etc/ssl/certs/selfsigned.crt')
+                key: fs.readFileSync(SSL_KEY_PATH),
+                cert: fs.readFileSync(SSL_CERT_PATH)
             };
             https.createServer(httpsOptions, app).listen(PORT, () => {
                 console.log(`HTTPS Server is running on port ${PORT}`);
@@ -31,14 +35,14 @@ async function StartApp() {
                 console.log(`HTTP Server is running on port ${PORT}`);
             });
         }
-    }
-    catch (error) {
+    } catch (error) {
         console.error("Failed to start the application:", error);
     }
 }
 
 process.on('SIGINT', async () => {
     console.log('Killing the process...');
+    logger.debug('Killing the process...');
     await database.close();
     process.exit(0);
 });

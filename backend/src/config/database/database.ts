@@ -1,17 +1,22 @@
-const { MongoClient } = require("mongodb")
-const { seedDatabase } = require('./seedData');
+import { MongoClient } from "mongodb";
+import { seedDatabase } from './seedData';
+import { MONGODB_URI, DB } from "../constants.ts";
+import logger from "../../utils/logger.ts";
+
 
 class DatabaseConf {
     connStr: string;
     databaseName: string;
     client: any | null;
     db: any;
+
     constructor() {
-        this.connStr = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/paramedia";
-        this.databaseName = "paramedia";
+        this.connStr = MONGODB_URI;
+        this.databaseName = DB;
         this.client = null;
         this.db = null;
     }
+
     async connect() {
         try {
             if (this.client) return;
@@ -19,13 +24,14 @@ class DatabaseConf {
             await this.client.connect();
             this.db = this.client.db(this.databaseName);
             console.log("Connected to MongoDB database:", this.databaseName);
+            logger.info("Connected to MongoDB database:", this.databaseName);
             await seedDatabase(this.db);
         } catch (error: any) {
             console.error("Failed to connect to MongoDB:", error);
+            logger.error("Failed to connect to MongoDB:", error);
             throw error;
         }
     }
-
 
     async close() {
         if (this.client) {
@@ -37,5 +43,6 @@ class DatabaseConf {
 
 
 }
+
 const database = new DatabaseConf();
-module.exports = database;
+export default database;

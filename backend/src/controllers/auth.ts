@@ -1,45 +1,43 @@
-const database = require('../config/database/database');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const { ObjectId } = require('mongodb');
-const logger = require(`../utils/logger`);
-
-const secret = process.env.SECRET_KEY;
+import database from '../config/database/database';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { ObjectId } from 'mongodb';
+import logger from '../utils/logger';
+import { SECRET_KEY } from "../config/constants.ts";
 
 
 class Authentication {
     async login(req, res) {
-        const { username, password } = req.body;
+        const {username, password} = req.body;
 
         logger.info(`Login attempt for user: ${username || 'undefined'}`);
-
         if (!username || !password) {
             logger.warn('Login failed: missing username or password');
-            return res.status(400).json({ message: 'Username and password are required' });
+            return res.status(400).json({message: 'Username and password are required'});
         }
 
         try {
-            const user = await database.db.collection('users').findOne({ correo_electronico: username });
-            
+            const user = await database.db.collection('users').findOne({correo_electronico: username});
+
             if (!user) {
                 logger.warn(`Login failed: user not found (${username})`);
-                return res.status(401).json({ message: 'Invalid username or password' });
+                return res.status(401).json({message: 'Invalid username or password'});
             }
 
             const passwordMatch = await bcrypt.compare(password, user.password);
             if (!passwordMatch) {
                 logger.warn(`Login failed: incorrect password for ${username}`);
-                return res.status(401).json({ message: 'Invalid username or password' });
+                return res.status(401).json({message: 'Invalid username or password'});
             }
-            
-            const { password: userPassword, ...userWithoutPassword } = user;
-            const token = jwt.sign({ _id: user._id }, secret, { expiresIn: '3d' });
+
+            const {password: userPassword, ...userWithoutPassword} = user;
+            const token = jwt.sign({_id: user._id}, SECRET_KEY, {expiresIn: '3d'});
 
             logger.info(`User ${username} logged in successfully`);
-            return res.status(200).json({ user: userWithoutPassword, token: token });
+            return res.status(200).json({user: userWithoutPassword, token: token});
         } catch (error) {
             logger.error(`Database error during login for ${username}: ${error.message}`);
-            return res.status(500).json({ message: 'Internal server error' });
+            return res.status(500).json({message: 'Internal server error'});
         }
     }
 
@@ -51,7 +49,7 @@ class Authentication {
         }
 
         try {
-            const decoded = jwt.verify(token, secret);
+            const decoded = jwt.verify(token, SECRET_KEY);
             logger.info(`Token verified successfully for user ID: ${decoded._id}`);
             return decoded;
         } catch (error) {
@@ -63,7 +61,7 @@ class Authentication {
     async getPermissions(userId) {
         logger.debug(`Fetching permissions for user ID: ${userId}`);
         try {
-            const user = await database.db.collection('users').findOne({ _id: new ObjectId(userId) });
+            const user = await database.db.collection('users').findOne({_id: new ObjectId(userId)});
             if (!user) {
                 logger.warn(`User not found while fetching permissions: ${userId}`);
                 throw new Error('User not found');
@@ -90,7 +88,7 @@ class Authentication {
             throw new Error('Error checking user permissions');
         }
     }
-    
+
 }
 
 export default new Authentication();
