@@ -3,10 +3,6 @@ import authController from './controllers/auth';
 import reportsController from './controllers/reports';
 import usersController from './controllers/users';
 
-const router = Router();
-
-
-router.post('/login', authController.login);
 
 /*
 * ESTRUCTURA de rutas para recurso ra-json-server
@@ -23,41 +19,62 @@ router.post('/login', authController.login);
 */
 
 
+const router = Router();
+
 // Reports routes
 
-router.get('/reports', reportsController.getAllReports);          // getList
-router.get('/reports/:id', reportsController.getReportById);      // getOne
-router.post('/reports', reportsController.createReport);          // create
-router.put('/reports/:id', reportsController.updateReport);       // update
-router.delete('/reports/:id', reportsController.deleteReport);    // delete
+const reports_routes = Router();
+
+reports_routes.get('', reportsController.getAllReports);       // getList
+reports_routes.get('/:id', reportsController.getReportById);   // getOne
+reports_routes.post('', reportsController.createReport);       // create
+reports_routes.put('/:id', reportsController.updateReport);    // update
+reports_routes.delete('/:id', reportsController.deleteReport); // delete
 
 
 // My reports routes 
 
-router.get('/my-reports', reportsController.getMyReports);         // getList
-router.get('/my-reports/:id', reportsController.getMyReportById);  // getOne
-router.post('/my-reports', reportsController.createReport);        // create
+const my_reports_routes = Router();
+
+my_reports_routes.get('', reportsController.getMyReports);        // getList
+my_reports_routes.get('/:id', reportsController.getMyReportById); // getOne
+my_reports_routes.post('', reportsController.createReport);       // create
 
 
 // Turn reports routes
 
-router.get('/turn-reports', reportsController.getTurnReports);         // getList
-router.get('/turn-reports/:id', reportsController.getTurnReportById);  // getOne
+const turn_reports_routes = Router();
+
+turn_reports_routes.get('', reportsController.getTurnReports);        // getList
+turn_reports_routes.get('/:id', reportsController.getTurnReportById); // getOne
 
 
 // Users routes
 
-router.get('/users', usersController.getAllUsers);        // getList
-router.get('/users/:id', usersController.getUserById);    // getOne
-router.post('/users', usersController.createUser);        // create
-router.put('/users/:id', usersController.updateUser);     // update
-router.delete('/users/:id', usersController.deleteUser);  // delete
+const user_routes = Router();
+
+user_routes.get('', usersController.getAllUsers);       // getList
+user_routes.get('/:id', usersController.getUserById);   // getOne
+user_routes.post('', usersController.createUser);       // create
+user_routes.put('/:id', usersController.updateUser);    // update
+user_routes.delete('/:id', usersController.deleteUser); // delete
 
 
 // Turn users routes
 
-router.get('/turn-users', usersController.getTurnUsers);         // getList
-router.get('/turn-users/:id', usersController.getTurnUserById);  // getOne
+const turn_user_routes = Router();
+
+turn_user_routes.get('', usersController.getTurnUsers);         // getList
+turn_user_routes.get('/:id', usersController.getTurnUserById);  // getOne
+
+
+router.post('/login', authController.login);
+
+router.use('/users', user_routes);
+router.use('/reports', reports_routes);
+router.use('/my-reports', my_reports_routes);
+router.use('/turn-reports', turn_reports_routes);
+router.use('/turn-reports', turn_reports_routes);
 
 
 export default router; 

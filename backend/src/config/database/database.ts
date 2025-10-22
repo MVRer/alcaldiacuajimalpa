@@ -23,12 +23,14 @@ class DatabaseConf {
             this.client = new MongoClient(this.connStr);
             await this.client.connect();
             this.db = this.client.db(this.databaseName);
-            console.log("Connected to MongoDB database:", this.databaseName);
-            logger.info("Connected to MongoDB database:", this.databaseName);
+
+            console.log(`Connected to MongoDB database: ${this.databaseName}`);
+            logger.info(`Connected to MongoDB database: ${this.databaseName}`);
+
             await seedDatabase(this.db);
         } catch (error: any) {
-            console.error("Failed to connect to MongoDB:", error);
-            logger.error("Failed to connect to MongoDB:", error);
+            console.error(`Failed to connect to MongoDB: ${error}`);
+            logger.error(`Failed to connect to MongoDB: ${error}`);
             throw error;
         }
     }
@@ -40,8 +42,6 @@ class DatabaseConf {
             this.db = null;
         }
     }
-
-
 }
 
 const database = new DatabaseConf();
