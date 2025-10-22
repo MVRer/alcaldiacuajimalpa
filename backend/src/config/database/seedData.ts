@@ -1,6 +1,5 @@
-import bcrypt from "bcrypt";
 import { faker } from "@faker-js/faker";
-import { SALT_ROUNDS } from "../constants.ts";
+import { hash_password } from "../../utils/password.ts";
 
 
 /**
@@ -8,7 +7,8 @@ import { SALT_ROUNDS } from "../constants.ts";
  */
 async function seedDatabase(db: any) {
     const defaultUser = "admin@paramedia.com";
-    const defaultPassword = await bcrypt.hash("123", SALT_ROUNDS);
+    // const defaultPassword = await bcrypt.hash("123", SALT_ROUNDS);
+    const defaultPassword = await hash_password("123")
 
     const existingUser = await db.collection("users").findOne({correo_electronico: defaultUser});
 
@@ -29,7 +29,7 @@ async function seedDatabase(db: any) {
             turnos: [],
             permissions: ["*"],
         });
-        console.log("Default admin user created:", defaultUser);
+        console.log(`Default admin user created: ${defaultUser}`);
     } else {
         console.log("Default admin user already exists");
     }

@@ -8,7 +8,6 @@ export const {
     SECRET_KEY,
     MONGODB_URI,
     DB,
-    SALT_ROUNDS,
     USE_HTTPS,
     SSL_KEY_PATH,
     SSL_CERT_PATH,

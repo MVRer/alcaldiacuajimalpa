@@ -1,9 +1,8 @@
-import bcrypt from 'bcrypt';
 import database from '../config/database/database';
 import authController from './auth';
 import { ObjectId } from 'mongodb';
 import logger from '../utils/logger';
-import { SALT_ROUNDS } from "../config/constants.ts";
+import { hash_password } from "../utils/password.ts";
 
 
 class UsersController {
@@ -186,7 +185,7 @@ class UsersController {
 
             if (contrasenia) {
                 logger.info(`Hashing password for user ${id}.`);
-                updateData.password = await bcrypt.hash(contrasenia, SALT_ROUNDS);
+                updateData.password = await hash_password(contrasenia);
             }
 
             logger.info(`Attempting to update user with ID: ${id}`);
@@ -270,7 +269,7 @@ class UsersController {
             }
 
             logger.info(`Hashing password for new user ${correo_electronico}.`);
-            const hashedPassword = await bcrypt.hash(contrasenia, SALT_ROUNDS);
+            const hashedPassword = await hash_password(contrasenia);
 
             logger.info(`Inserting new user record for ${correo_electronico} created by ${user._id}.`);
             const newUser = {

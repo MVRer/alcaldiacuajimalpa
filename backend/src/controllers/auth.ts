@@ -1,9 +1,9 @@
 import database from '../config/database/database';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import { ObjectId } from 'mongodb';
 import logger from '../utils/logger';
 import { SECRET_KEY } from "../config/constants.ts";
+import { check_password } from "../utils/password.ts";
 
 
 class Authentication {
@@ -24,7 +24,7 @@ class Authentication {
                 return res.status(401).json({message: 'Invalid username or password'});
             }
 
-            const passwordMatch = await bcrypt.compare(password, user.password);
+            const passwordMatch = await check_password(user.password, password);
             if (!passwordMatch) {
                 logger.warn(`Login failed: incorrect password for ${username}`);
                 return res.status(401).json({message: 'Invalid username or password'});
