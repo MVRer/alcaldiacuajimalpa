@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 
-export const UserSchema = z.object({
+const UserSchema = z.object({
     id: z.number(),
     nombre: z.string(),
     apellidos: z.string(),
-    fecha_nacimiento: z.string(),  // could use z.string().date() if you normalize date format
+    fecha_nacimiento: z.string(),  // could use z.string().date() if normalize date format
     fecha_registro: z.string(),
     telefono: z.string(),
     correo_electronico: z.string().email(),
@@ -20,3 +20,4 @@ export const UserSchema = z.object({
 
 
 export type User = z.infer<typeof UserSchema>;
+export default UserSchema;

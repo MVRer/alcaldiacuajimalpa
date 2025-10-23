@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { usePermissions, Menu, DashboardMenuItem } from 'react-admin';
+import * as React from "react";
+import { usePermissions, Menu, DashboardMenuItem } from "react-admin";
 
 const MyMenu = (props) => {
   const { permissions } = usePermissions();
 
-  const isAdmin = permissions?.includes('*');
+  const isAdmin = permissions?.includes("*");
 
   return (
     <Menu {...props}>
@@ -19,4 +19,3 @@ const MyMenu = (props) => {
 };
 
 export default MyMenu;
-

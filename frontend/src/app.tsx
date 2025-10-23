@@ -24,14 +24,15 @@ import loginPage from "./login.tsx";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 
+
 export const App = () => (
   <Admin
     authProvider={authProvider}
     dataProvider={dataProvider}
     i18nProvider={i18nProvider}
     dashboard={Dashboard}
-    layout={layout}
     loginPage={loginPage}
+    layout={layout}
     theme={theme}
   >
     {(permissions: string[]) => {

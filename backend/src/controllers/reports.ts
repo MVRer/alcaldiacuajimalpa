@@ -2,6 +2,7 @@ import database from '../config/database/database';
 import authController from './auth';
 import { ObjectId } from 'mongodb';
 import logger from '../utils/logger';
+import reportSchema from "../schema/reports.schema.ts";
 
 
 class ReportsController {
@@ -117,77 +118,42 @@ class ReportsController {
 
     async updateReport(req: any, res: any) {
         logger.info('ReportsController.updateReport called');
-        logger.debug(`Request params: ${JSON.stringify(req.params)}`);
-        logger.debug(`Request body: ${JSON.stringify(req.body)}`);
-
         const {id} = req.params;
 
         const user = await authController.verifyToken(req).catch((err) => {
             logger.warn(`Unauthorized update attempt on report ${id}: ${err.message}`);
             return res.status(401).json({message: err.message});
         });
-
-        if (!user) {
-            logger.warn('User verification failed, aborting update operation.');
-            return;
-        }
+        if (!user) return;
 
         const hasPermission = await authController.hasPermission(user._id, 'edit_reports');
-        logger.debug(`User ${user._id} permission 'edit_reports': ${hasPermission}`);
-
         if (!hasPermission) {
             logger.warn(`User ${user._id} attempted to update report ${id} without permission.`);
             return res.status(403).json({message: 'Forbidden'});
         }
 
-        const {
-            folio, tiempo_fecha, tiempo_fecha_atencion, ubi, codigoPostal, modo_de_activacion,
-            gravedad_emergencia, tipo_servicio, tiempo_translado, kilometros_recorridos,
-            dictamen, trabaja_realizado, nombres_afectados, dependencias_participantes,
-            observaciones, otros
-        } = req.body;
-
-        if (!folio || !tiempo_fecha || !ubi || !modo_de_activacion || !tipo_servicio || tipo_servicio.length === 0) {
-            logger.warn(`Validation failed for report update ${id}: Missing required fields.`);
-            return res.status(400).json({
-                message: 'Required fields: folio, tiempo_fecha, ubi, modo_de_activacion, tipo_servicio'
-            });
+        const parsed = updateReportSchema.safeParse(req.body);
+        if (!parsed.success) {
+            logger.warn(`Validation failed for report update ${id}: ${JSON.stringify(parsed.error.issues)}`);
+            return res.status(400).json({message: 'Invalid input', errors: parsed.error.issues});
         }
-
-        if (typeof folio !== 'number' || typeof gravedad_emergencia !== 'number') {
-            logger.warn(`Validation failed for report update ${id}: Invalid data types.`);
-            return res.status(400).json({message: 'Invalid data types'});
-        }
-
-        if (!Array.isArray(tipo_servicio)) {
-            logger.warn(`Validation failed for report update ${id}: tipo_servicio is not an array.`);
-            return res.status(400).json({message: 'tipo_servicio must be an array'});
-        }
+        const data = parsed.data;
 
         try {
-            logger.info(`Attempting to update report with ID: ${id}`);
-            const updatedReport = await database.db.collection('reports').findOneAndUpdate(
+            const updated = await database.db.collection('reports').findOneAndUpdate(
                 {_id: new ObjectId(id)},
-                {
-                    $set: {
-                        folio, tiempo_fecha, tiempo_fecha_atencion, ubi, codigoPostal,
-                        modo_de_activacion, gravedad_emergencia, tipo_servicio, tiempo_translado,
-                        kilometros_recorridos, dictamen, trabaja_realizado, nombres_afectados,
-                        dependencias_participantes, observaciones, otros, updatedAt: new Date()
-                    }
-                },
-                {returnOriginal: false}
+                {$set: {...data, updatedAt: new Date()}},
+                {returnDocument: 'after'}
             );
 
-            if (!updatedReport.value) {
+            if (!updated.value) {
                 logger.warn(`Report with ID ${id} not found for update.`);
                 return res.status(404).json({message: 'Report not found'});
             }
 
             logger.info(`Report ${id} updated successfully by user ${user._id}.`);
-            return res.status(200).json(updatedReport.value);
+            return res.status(200).json(updated.value);
         } catch (error: any) {
-            console.error('Error updating report:', error);
             logger.error(`Error updating report ${id}: ${error.message}`, {stack: error.stack});
             return res.status(500).json({message: 'Internal server error'});
         }
@@ -202,76 +168,40 @@ class ReportsController {
             return res.status(401).json({message: err.message});
         });
 
-        if (!user) {
-            logger.warn('User verification failed, aborting report creation.');
-            return;
-        }
+        if (!user) return;
 
         const hasPermission = await authController.hasPermission(user._id, 'create_reports');
-        logger.debug(`User ${user._id} permission 'create_reports': ${hasPermission}`);
-
         if (!hasPermission) {
             logger.warn(`User ${user._id} attempted to create a report without permission.`);
             return res.status(403).json({message: 'Forbidden'});
         }
 
-        const {
-            folio, tiempo_fecha, tiempo_fecha_atencion, ubi, codigoPostal, modo_de_activacion,
-            gravedad_emergencia, tipo_servicio, tiempo_translado, kilometros_recorridos,
-            dictamen, trabaja_realizado, nombres_afectados, dependencias_participantes,
-            observaciones, otros
-        } = req.body;
-
-        if (!folio || !tiempo_fecha || !ubi || !modo_de_activacion || !tipo_servicio || tipo_servicio.length === 0) {
-            logger.warn('Validation failed: Missing required fields in createReport.');
-            return res.status(400).json({
-                message: 'Required fields: folio, tiempo_fecha, ubi, modo_de_activacion, tipo_servicio'
-            });
+        const parsed = reportSchema.safeParse(req.body);
+        if (!parsed.success) {
+            logger.warn(`Validation failed: ${JSON.stringify(parsed.error.issues)}`);
+            return res.status(400).json({message: 'Invalid input', errors: parsed.error.issues});
         }
-
-        if (typeof folio !== 'number' || typeof gravedad_emergencia !== 'number') {
-            logger.warn(`Validation failed: Invalid data types for report creation by user ${user._id}.`);
-            return res.status(400).json({message: 'Invalid data types'});
-        }
-
-        if (!Array.isArray(tipo_servicio)) {
-            logger.warn(`Validation failed: tipo_servicio is not an array for report creation by user ${user._id}.`);
-            return res.status(400).json({message: 'tipo_servicio must be an array'});
-        }
+        const data = parsed.data;
 
         try {
-            logger.info(`Checking if report with folio ${folio} already exists.`);
-            const existingReport = await database.db.collection('reports').findOne({folio});
-            if (existingReport) {
-                logger.warn(`Duplicate report creation attempt detected: folio ${folio} already exists.`);
-                return res.status(409).json({message: 'A report with this folio already exists'});
-            }
+            const existing = await database.db.collection('reports').findOne({folio: data.folio});
+            if (existing) return res.status(409).json({message: 'A report with this folio already exists'});
 
-            logger.debug(`Fetching user information for user ID: ${user._id}`);
             const userInfo = await database.db.collection('users').findOne({_id: new ObjectId(user._id)});
-            if (!userInfo) {
-                logger.warn(`User info not found for ID: ${user._id} during report creation.`);
-                return res.status(404).json({message: 'User not found'});
-            }
+            if (!userInfo) return res.status(404).json({message: 'User not found'});
 
             const newReport = {
-                folio, tiempo_fecha, tiempo_fecha_atencion, ubi, codigoPostal,
-                modo_de_activacion, gravedad_emergencia, tipo_servicio, tiempo_translado,
-                kilometros_recorridos, dictamen, trabaja_realizado, nombres_afectados,
-                dependencias_participantes, observaciones, otros,
+                ...data,
                 createdBy: new ObjectId(user._id),
                 usuario_reportando: `${userInfo.nombre} ${userInfo.apellidos}`,
                 turno: userInfo.turnos,
-                createdAt: new Date()
+                createdAt: new Date(),
             };
 
-            logger.info(`Inserting new report with folio ${folio} by user ${user._id}.`);
             await database.db.collection('reports').insertOne(newReport);
-
-            logger.info(`Report with folio ${folio} created successfully.`);
+            logger.info(`Report with folio ${data.folio} created successfully.`);
             return res.status(201).json(newReport);
         } catch (error: any) {
-            console.error('Error creating report:', error);
             logger.error(`Error creating report: ${error.message}`, {stack: error.stack});
             return res.status(500).json({message: 'Internal server error'});
         }

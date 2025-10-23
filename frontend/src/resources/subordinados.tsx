@@ -1,5 +1,6 @@
 import { TextField, List, Datagrid, Show, SimpleShowLayout } from "react-admin";
 
+
 export const SubordinadosList = () => (
     <List>
         <Datagrid rowClick="show">

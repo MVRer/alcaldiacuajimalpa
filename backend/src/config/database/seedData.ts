@@ -7,7 +7,7 @@ import { hash_password } from "../../utils/password.ts";
  */
 async function seedDatabase(db: any) {
     const defaultUser = "admin@paramedia.com";
-    const defaultPassword = await hash_password("123")
+    const defaultPassword = await hash_password("123");
 
     const existingUser = await db.collection("users").findOne({correo_electronico: defaultUser});
 

@@ -29,6 +29,7 @@ import {
 } from "react-admin";
 import { TopToolbar, ExportButton, CreateButton } from "react-admin";
 
+
 const gravedadChoices = [
   { id: 0, name: "Baja" },
   { id: 1, name: "Media" },
@@ -97,10 +98,13 @@ export const CreateMyReport = () => {
         </Typography>
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
           <Typography variant="body1">
-            <strong>Usuario:</strong> {identity.fullName || 'N/D'}
+            <strong>Usuario:</strong> {identity.fullName || "N/D"}
           </Typography>
           <Typography variant="body1">
-            <strong>Turno:</strong> {identity.turnos && identity.turnos.length > 0 ? identity.turnos.join(', ') : 'N/D'}
+            <strong>Turno:</strong>{" "}
+            {identity.turnos && identity.turnos.length > 0
+              ? identity.turnos.join(", ")
+              : "N/D"}
           </Typography>
         </Box>
       </Box>
@@ -120,7 +124,7 @@ export const CreateMyReport = () => {
           Identificación y Ubicación
         </Typography>
         <Box sx={{ display: { xs: "block", md: "flex" }, gap: 2 }}>
-          <NumberInput source="folio" label="Folio" validate={[required()]} />
+          <TextInput source="folio" label="Folio" validate={[required()]} />
           <DateTimeInput
             source="tiempo_fecha"
             label="Fecha y Hora del Reporte"
@@ -129,7 +133,12 @@ export const CreateMyReport = () => {
           <TextInput source="codigoPostal" label="Codigo Postal" />
         </Box>
 
-        <TextInput source="ubi" label="Ubicación" fullWidth validate={[required()]} />
+        <TextInput
+          source="ubi"
+          label="Ubicación"
+          fullWidth
+          validate={[required()]}
+        />
 
         <Divider sx={{ my: 2 }} />
 
@@ -307,11 +316,17 @@ export const MyReportShow = () => (
   <Show>
     <SimpleShowLayout>
       <TextField source="folio" label="Folio" />
-      <DateField source="tiempo_fecha" label="Fecha y Hora del Reporte" showTime />
+      <DateField
+        source="tiempo_fecha"
+        label="Fecha y Hora del Reporte"
+        showTime
+      />
       <TextField source="ubi" label="Ubicación" />
       <TextField source="codigoPostal" label="Código Postal" />
 
-      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Detalles del Servicio</Typography>
+      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+        Detalles del Servicio
+      </Typography>
       <TextField source="modo_de_activacion" label="Forma de reporte" />
       <NumberField source="gravedad_emergencia" label="Gravedad" />
       <ArrayField source="tipo_servicio" label="Tipo de Servicio">
@@ -319,11 +334,20 @@ export const MyReportShow = () => (
           <ChipField source="" />
         </SingleFieldList>
       </ArrayField>
-      <DateField source="tiempo_fecha_atencion" label="Hora de Atención" showTime />
+      <DateField
+        source="tiempo_fecha_atencion"
+        label="Hora de Atención"
+        showTime
+      />
       <NumberField source="tiempo_translado" label="Tiempo de Traslado (min)" />
-      <NumberField source="kilometros_recorridos" label="Kilómetros Recorridos" />
+      <NumberField
+        source="kilometros_recorridos"
+        label="Kilómetros Recorridos"
+      />
 
-      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Resultados</Typography>
+      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+        Resultados
+      </Typography>
       <TextField source="dictamen" label="Dictamen" />
       <ArrayField source="trabaja_realizado" label="Trabajos Realizados">
         <SingleFieldList>
@@ -331,23 +355,32 @@ export const MyReportShow = () => (
         </SingleFieldList>
       </ArrayField>
 
-      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Personas y Dependencias</Typography>
+      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+        Personas y Dependencias
+      </Typography>
       <ArrayField source="nombres_afectados" label="Nombres Afectados">
         <SingleFieldList>
           <ChipField source="nombre" />
         </SingleFieldList>
       </ArrayField>
-      <ArrayField source="dependencias_participantes" label="Dependencias Participantes">
+      <ArrayField
+        source="dependencias_participantes"
+        label="Dependencias Participantes"
+      >
         <SingleFieldList>
           <ChipField source="dependencia" />
         </SingleFieldList>
       </ArrayField>
 
-      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Otros</Typography>
+      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+        Otros
+      </Typography>
       <TextField source="observaciones" label="Observaciones" />
       <TextField source="otros" label="Otros" />
 
-      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Información del Reporte</Typography>
+      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+        Información del Reporte
+      </Typography>
       <TextField source="usuario_reportando" label="Usuario" />
       <DateField source="createdAt" label="Creado" showTime />
     </SimpleShowLayout>

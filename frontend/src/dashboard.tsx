@@ -118,7 +118,6 @@ export const Dashboard = () => {
   return (
     <Box p={3}>
       <Grid container spacing={3}>
-        {/* Top Row: 4 KPI Cards */}
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -128,7 +127,6 @@ export const Dashboard = () => {
           </Card>
         </Grid>
 
-        {/* NEW: Total Usuarios Card */}
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -158,7 +156,6 @@ export const Dashboard = () => {
           </Card>
         </Grid>
 
-        {/* NEW: Line Chart - Reportes por Día */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
@@ -190,7 +187,6 @@ export const Dashboard = () => {
           </Card>
         </Grid>
 
-        {/* Existing Pie Chart */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
@@ -222,7 +218,6 @@ export const Dashboard = () => {
           </Card>
         </Grid>
 
-        {/* NEW: Radar Chart - Distribución de Reportes Urbanos */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
@@ -253,7 +248,6 @@ export const Dashboard = () => {
           </Card>
         </Grid>
 
-        {/* Existing Recent Reports Table */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
