@@ -1,6 +1,6 @@
 import { Layout } from "react-admin";
-import MyMenu from "./menu";
+import menu from "./menu";
 
 export default function layout(props) {
-  return <Layout {...props} menu={MyMenu} />;
+  return <Layout {...props} menu={menu} />;
 }

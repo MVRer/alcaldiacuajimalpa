@@ -21,8 +21,7 @@ import {
   LockOutlined,
 } from "@mui/icons-material";
 
-
-export const CustomLoginPage = () => {
+export const loginPage = () => {
   const login = useLogin();
 
   const [username, setUsername] = useState("");
@@ -280,4 +279,4 @@ export const CustomLoginPage = () => {
   );
 };
 
-export default CustomLoginPage;
+export default loginPage;

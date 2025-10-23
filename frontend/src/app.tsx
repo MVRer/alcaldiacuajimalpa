@@ -1,14 +1,21 @@
 import { Admin, Resource, usePermissions } from "react-admin";
-import { authProvider } from "./providers/auth/authProvider";
-import { dataProvider } from "./providers/dataProvider";
-import { i18nProvider } from "./providers/i18nProvider";
-import { Dashboard } from "./dashboard";
 
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import GroupIcon from "@mui/icons-material/Group";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+
+import dataProvider from "./providers/dataProvider";
+import i18nProvider from "./providers/i18nProvider";
+import authProvider from "./providers/authProvider";
+import dashboard from "./core/dashboard";
+
+import layout from "./core/layout";
+import loginPage from "./core/login.tsx";
+
+// import { ThemeProvider } from "@mui/material/styles";
+import theme from "./core/theme";
 
 import {
   CreateMyReport,
@@ -18,11 +25,7 @@ import {
 import { UserCreate, UserEdit, UserList, UserShow } from "./resources/user";
 import { SubordinadoShow, SubordinadosList } from "./resources/subordinados";
 
-import layout from "./layout";
-import loginPage from "./login.tsx";
 
-import { ThemeProvider } from "@mui/material/styles";
-import theme from "./theme";
 
 
 export const App = () => (
@@ -30,7 +33,7 @@ export const App = () => (
     authProvider={authProvider}
     dataProvider={dataProvider}
     i18nProvider={i18nProvider}
-    dashboard={Dashboard}
+    dashboard={dashboard}
     loginPage={loginPage}
     layout={layout}
     theme={theme}

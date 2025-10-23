@@ -5,11 +5,11 @@ dotenv.config({path: './.env', debug: false});
 
 
 export const {
-    SECRET_KEY,
-    MONGODB_URI,
-    DB,
-    USE_HTTPS,
-    SSL_KEY_PATH,
     SSL_CERT_PATH,
+    SSL_KEY_PATH,
+    MONGODB_URI,
+    SECRET_KEY,
+    USE_HTTPS,
     PORT,
+    DB,
 } = environmentSchema.parse(process.env);

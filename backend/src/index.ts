@@ -1,9 +1,9 @@
 import { USE_HTTPS, PORT, SSL_KEY_PATH, SSL_CERT_PATH } from "./config/constants.ts";
 
-import https from "https";
-import fs from "fs";
-import cors from "cors";
 import express from "express";
+import https from "https";
+import cors from "cors";
+import fs from "fs";
 
 import router from "./routes";
 

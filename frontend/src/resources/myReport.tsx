@@ -12,10 +12,6 @@ import {
   FormDataConsumer,
   required,
   minLength,
-} from "react-admin";
-import { Box, Typography, Divider } from "@mui/material";
-
-import {
   List,
   Datagrid,
   TextField,
@@ -26,9 +22,11 @@ import {
   ChipField,
   Show,
   SimpleShowLayout,
+  TopToolbar,
+  ExportButton,
+  CreateButton,
 } from "react-admin";
-import { TopToolbar, ExportButton, CreateButton } from "react-admin";
-
+import { Box, Typography, Divider } from "@mui/material";
 
 const gravedadChoices = [
   { id: 0, name: "Baja" },
@@ -51,27 +49,6 @@ const tipoServicioChoices = [
   { id: "otro", name: "Otro (Especificar)" },
 ];
 
-const translateTurn = (turn) => {
-  const turns = [
-    { schedule: "Lun,vie	8-3" },
-    { schedule: "Lun,vie	3-9pm" },
-    { schedule: "Lun,mie,vie	9pm-8am" },
-    { schedule: "Mar,jue,dom	9pm-8am" },
-    { schedule: "Sab,dom,fest	8am-8pm" },
-    { schedule: "Sab,dom,fest	8pm-8am" },
-  ];
-
-  const validTurn =
-    turn !== null &&
-    turn !== undefined &&
-    turn &&
-    turn > 0 &&
-    turn < turns.length &&
-    typeof turn === "number";
-
-  return validTurn ? turns[turn].schedule : "N/D";
-};
-
 export const CreateMyReport = () => {
   const { data: identity, isLoading } = useGetIdentity();
 
@@ -79,8 +56,6 @@ export const CreateMyReport = () => {
   if (!identity) return <h2>No Logged in</h2>;
 
   const now = new Date().toISOString();
-  const codigoPostal = "01389";
-  const address = "Avenida Carlos Lazo 100, Col. Santa Fe, Ciudad de Mexico";
 
   return (
     <Create>
@@ -113,11 +88,6 @@ export const CreateMyReport = () => {
         defaultValues={{
           y: now,
           tiempo_fecha_atencion: now,
-          ubi: address,
-          codigoPostal: codigoPostal,
-          // gravedad_emergencia: gravedadChoices[1].name,
-          // modo_de_activacion: "",
-          // kilometros_recorridos: "",
         }}
       >
         <Typography variant="h6" gutterBottom>

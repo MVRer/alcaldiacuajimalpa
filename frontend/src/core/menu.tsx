@@ -1,7 +1,7 @@
 import * as React from "react";
 import { usePermissions, Menu, DashboardMenuItem } from "react-admin";
 
-const MyMenu = (props) => {
+const menu = (props) => {
   const { permissions } = usePermissions();
 
   const isAdmin = permissions?.includes("*");
@@ -18,4 +18,4 @@ const MyMenu = (props) => {
   );
 };
 
-export default MyMenu;
+export default menu;
