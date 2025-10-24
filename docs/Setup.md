@@ -125,7 +125,7 @@ bun run dev
 Una vez iniciado el backend, se crea automáticamente un usuario admin:
 
 **Email:** `admin@paramedia.com`
-**Contraseña:** `123`
+**Contraseña:** `admin123`
 
 **⚠️ CAMBIAR** esta contraseña después del primer login.
 
